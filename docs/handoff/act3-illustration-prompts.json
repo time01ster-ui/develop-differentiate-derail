@@ -1,0 +1,17 @@
+[
+  {
+    "id": "ch-loxstiffness", "aspect": "3:2",
+    "out": "/private/tmp/claude-501/-Users-manuelmendoza/fe062b4b-2136-4e95-bef1-c93ad6148efd/scratchpad/build/ch-loxstiffness.png",
+    "prompt": "A cross-section of tissue at the edge of a tumor, a clean cell-biology schematic, showing how a tumor stiffens its own surroundings. On one side a loose mesh of thin separate collagen fibers that reads as soft; moving toward the tumor the fibers get tied together by small crosslinking enzymes into thick, dense, aligned cables that read as stiff, forming a clear stiffness gradient that points outward from the tumor. A few tumor cells are shown crawling UP this gradient toward the stiffer aligned region, each with a small single forward arrow, climbing the firmness they built themselves. Use warm gold to highlight the enzyme crosslink knots and the stiff aligned cables, muted teal for the loose soft mesh; the stiff aligned side glows, the loose side is dim. Place these exact labels with thin leader lines: collagen, LOX, stiff matrix, durotaxis. No invented structures, no distant organs."
+  },
+  {
+    "id": "ch-invasivemargin", "aspect": "3:2",
+    "out": "/private/tmp/claude-501/-Users-manuelmendoza/fe062b4b-2136-4e95-bef1-c93ad6148efd/scratchpad/build/ch-invasivemargin.png",
+    "prompt": "A tissue margin shown as a clean schematic split into two zones. On the LEFT, organized normal tissue: epithelial cells sitting in an even orderly row on top of a continuous thin dense sheet, the basement membrane. On the RIGHT, a disordered invasive front: the same sheet is broken open at one point and a few carcinoma cells have crossed through the gap into the looser tissue just below, scattered and irregular rather than evenly spaced, staying close to the margin and not traveling far. Show the breach clearly as a single gap in the sheet with cells passing locally through it. Use emerald green for the intact basement membrane sheet, warm gold to mark the breach point, muted slate for the looser tissue below; the left side reads orderly and calm, the right side reads disordered. Place these exact labels with thin leader lines: normal tissue, basement membrane, breach, invasive front, stroma. No invented structures, no distant organs, no whole body."
+  },
+  {
+    "id": "stage-III-margin", "aspect": "3:2",
+    "out": "/private/tmp/claude-501/-Users-manuelmendoza/fe062b4b-2136-4e95-bef1-c93ad6148efd/scratchpad/build/stage-III-margin.png",
+    "prompt": "A clean schematic micrograph-style field split into two halves for comparison, the kind a measurement tool analyzes. On the LEFT half, normal tissue: cell nuclei evenly and regularly spaced, with faint neat Voronoi territory polygons drawn around them. On the RIGHT half, the invasive front: the same nuclei but scattered and irregular, crowded in some places and sparse in others, with messy uneven Voronoi polygons. A thin vertical dashed line down the middle marks the boundary between the two halves. Use soft luminous cyan for the nuclei, thin teal lines for the Voronoi polygons, warm gold for the dashed boundary line; the left is orderly, the right is disordered, and the same tool reads both. Place these exact labels with thin leader lines: normal tissue, invasive front, margin, Voronoi. No invented structures."
+  }
+]

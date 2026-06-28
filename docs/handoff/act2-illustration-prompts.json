@@ -1,0 +1,17 @@
+[
+  {
+    "id": "ch-yaptaz", "aspect": "3:2",
+    "out": "/private/tmp/claude-501/-Users-manuelmendoza/2e17f031-ba0a-49ce-b9ce-a1b25d0e76dc/scratchpad/build/ch-yaptaz.png",
+    "prompt": "A single cell shown on two substrates side by side for comparison, a clean cell-biology schematic. On the LEFT, a SOFT substrate: the cell is rounded and compact, its YAP and TAZ drawn as small dots scattered in the cytoplasm outside the nucleus, only small adhesions, and dim fate-gene activity. On the RIGHT, a FIRM substrate: the same cell is flat and spread wide, with larger focal adhesions at its base, taut actin stress fibers, and the YAP and TAZ dots now gathered inside the nucleus, with bright fate-gene activity. Draw one continuous force chain from the matrix outside, through an integrin and focal adhesion, along actin, to the nucleus. Place these exact labels with thin leader lines: soft, firm, YAP/TAZ, nucleus, focal adhesion. No invented structures."
+  },
+  {
+    "id": "ch-fateswitch", "aspect": "3:2",
+    "out": "/private/tmp/claude-501/-Users-manuelmendoza/2e17f031-ba0a-49ce-b9ce-a1b25d0e76dc/scratchpad/build/ch-fateswitch.png",
+    "prompt": "A single multipotent cranial neural crest cell at a three-way fate fork, drawn as a clean branching fate diagram. A Wnt signal arrives from an overlying skin layer at the top and builds up beta-catenin inside the cell. Two active bright branches light up in warm gold and emerald: one becomes bone (osteoblasts), one becomes dermis. A third dim greyed default branch leads to cartilage when the Wnt signal is low. Show the skin layer at the top as the Wnt source so that position sets fate. Place these exact labels with thin leader lines: Wnt, beta-catenin, RUNX2 bone, Sox9 cartilage, dermis. The cartilage branch is the faint default; the bone and dermis branches are bright and active."
+  },
+  {
+    "id": "stage-II-bench", "aspect": "3:2",
+    "out": "/private/tmp/claude-501/-Users-manuelmendoza/2e17f031-ba0a-49ce-b9ce-a1b25d0e76dc/scratchpad/build/stage-II-bench.png",
+    "prompt": "A clean schematic of a laboratory control panel, clearly a MODEL bench and not a microscope photo. On the left, two large slider controls stacked vertically: an upper slider for stiffness going from soft to firm, and a lower slider for cell shape going from round to spread. In the center, one model cell. On the right, two readouts: a YAP/TAZ localization meter drawn as a nucleus filling with glowing dots, and a fate readout showing a bone icon beside a cartilage icon. A small tag reads model. Place these exact labels with thin leader lines: stiffness, shape, YAP/TAZ, fate, model. Clean control-panel schematic, generous spacing."
+  }
+]

@@ -1,0 +1,608 @@
+// Act III "Derail" content pack. Authored + adversarially reviewed by the
+// grounded multi-agent content workflow (docs/handoff/act3-content-workflow.js),
+// captured to docs/handoff/act3-content-output.json, then generated into this
+// typed module. Honors every guardrail: reuse-not-reversal, the clearly-labeled
+// sibling carcinoma + content note, EMT enables (does not equal) metastasis,
+// local invasion is not metastasis, and the in-vivo causal force rung stays
+// locked. No em dashes in rendered strings.
+//
+// DATA BOUNDARY: ships zero unpublished Atit-lab data; the cancer framing is
+// reviewed by Dr. Atit before any student use, per the project gate.
+
+import type { ActStoryContent, ClaimOpt, HypothesisOpt, QuestionOpt, Rung } from './types'
+import type { ResourceConfig, RungReq } from './resources'
+import type { StageReflection } from './reflect'
+import type { Illustration } from './illustrations'
+import type { LibraryChapter, LibraryExtension } from './library'
+import type { ActContent } from './registry'
+
+export const RUNGS3: Rung[] = [
+  { id: "r1", lvl: 1, name: "Spatial disorder at the margin (Voronoi)", tools: "Cellpose nuclei detection + Voronoi nearest-neighbor irregularity, the same Act I engine, run on the tumor-margin field", cv: "--c-blue", avail: true },
+  { id: "r2", lvl: 2, name: "Matrix density and crosslink readout", tools: "Collagen alignment and fiber-density analysis on the same image, plus a separate LOX-crosslink density proxy (staining intensity standing in for crosslinking) in the ECM (extracellular matrix, the same matrix from Act II)", cv: "--c-green", avail: true },
+  { id: "r3", lvl: 3, name: "Live durotaxis tracking (PAID)", tools: "Time-lapse migration tracking on a stiffness-gradient gel; hire a trained operator to run it and an interpreter to read the tracks", cv: "--c-amber", avail: true },
+  { id: "r4", lvl: 4, name: "Direct in-vivo stiffness of the real margin (LOCKED)", tools: "AFM or Brillouin microscopy (specialized tools that measure how stiff tissue actually is) at the margin; requires the real specimen, a trained operator, and an expert interpreter", cv: "--c-pink", avail: false },
+  { id: "r5", lvl: 5, name: "Causal proof stiffness ALONE drives spread in a living patient (LOCKED)", tools: "A controlled in-vivo causal force experiment in a living patient that isolates stiffness as the cause of metastasis", cv: "--c-red", avail: false },
+]
+
+export const RUNG_REQ3: Record<string, RungReq> = {
+  "r1": { purpose: "Measure how irregular the cell spacing is at the invasive front and compare it to the matched normal tissue beside it.", cost: 0, needsOperator: false, needsInterpreter: false, equipInLab: true, tissue: "any" },
+  "r2": { purpose: "Check whether the matrix at the invasive front is actually denser, more aligned, and more crosslinked than normal tissue, the LOX-stiffening signature.", cost: 250, needsOperator: false, needsInterpreter: false, equipInLab: true, tissue: "any" },
+  "r3": { purpose: "Watch whether cells actually crawl UP the stiffness gradient toward the breach, instead of just inferring it from a still image.", cost: 3500, needsOperator: true, needsInterpreter: true, equipInLab: true, tissue: "any" },
+  "r4": { purpose: "Measure the genuine, direct stiffness of an actual tumor margin instead of a proxy in a model.", cost: 0, needsOperator: true, needsInterpreter: true, equipInLab: false, equipName: "AFM / Brillouin", tissue: "dead" },
+  "r5": { purpose: "Prove that stiffness BY ITSELF makes a real patient's cancer spread to other organs.", cost: 0, needsOperator: true, needsInterpreter: true, equipInLab: false, equipName: "a controlled study in a living patient", tissue: "any" },
+}
+
+export const RUNG_WHY3: Record<string, string> = {
+  "r1": "This is the free rung you already own from Act I. The same tool that scored ORDER in the developing face scores DISORDER here. It licenses one honest sentence: the margin is more disordered than the matched normal tissue IN THIS MODEL. It does NOT tell you why, or what the matrix is doing, or anything about a patient.",
+  "r2": "This connects the disorder you measured to the LOX/stiffening story. It licenses \"the invasive matrix is denser, more aligned, and more crosslinked in this model.\" But fiber alignment and the crosslink proxy are two different readouts, and a proxy is a stand-in, not a direct stiffness number, and it is still this model, not a patient's living tissue.",
+  "r3": "A still image shows a disordered front but cannot show motion. This rung pays for live tracking, so it can license \"in the model, cells migrate up the gradient toward the breach.\" It needs an operator AND an interpreter because the result is only as trustworthy as the person running and reading it. Still a model.",
+  "r4": "LOCKED, not in this lab. This is the rung that would turn a model proxy into a real stiffness number from real margin tissue. We do not have the instrument, the trained operator, or the interpreter. Because it stays locked, no result here can claim the real margin's stiffness, only the model's.",
+  "r5": "LOCKED and unreachable, on purpose. You cannot ethically run a controlled force experiment inside a living patient, and spread to distant organs (metastasis) is a different event from the local invasion you can see at this margin. This is the rung the blocked over-claim secretly needs. Because it can never light up here, \"stiffness causes this patient's cancer to spread\" stays out of reach, and that honesty is the point of the whole ladder.",
+}
+
+export const RUNG_NAMES3: Record<number, string> = { 0: 'No tools selected', 1: "Spatial disorder at the margin (Voronoi)", 2: "Matrix density and crosslink readout", 3: "Live durotaxis tracking (PAID)", 4: "Direct in-vivo stiffness of the real margin (LOCKED)", 5: "Causal proof stiffness ALONE drives spread in a living patient (LOCKED)", }
+
+export const RUNG_COLORS3: Record<number, string> = { 0: '--muted', 1: "--c-blue", 2: "--c-green", 3: "--c-amber", 4: "--c-pink", 5: "--c-red", }
+
+export const ACT3_RESOURCE: ResourceConfig = {
+  reqMap: RUNG_REQ3,
+  startingBudget: 50000,
+  hireCost: { operator: 12000, interpreter: 8000 },
+}
+
+export const QUESTIONS3: QuestionOpt[] = [
+  {
+    "id": "broad",
+    "tag": "Too broad to test",
+    "text": "How does cancer work?",
+    "note": "This is a whole field, not one experiment. You cannot point a microscope at \"how cancer works\" and get an answer. A good question names ONE thing you can actually measure in ONE image. Start by shrinking it down to something a single bench run could answer."
+  },
+  {
+    "id": "testable",
+    "tag": "Testable right here",
+    "text": "At a tumor's invasive margin in this model, are the cells more spatially disordered than in the matched organized normal tissue right next to it?",
+    "note": "This is the one to pick. It names a place (the invasive margin), a comparison (vs. the matched normal tissue beside it), and a number you can measure with the same Voronoi spacing tools from Act I. It can come out yes OR no, and either answer teaches you something. That is what makes a question testable."
+  },
+  {
+    "id": "vague",
+    "tag": "Too vague to measure",
+    "text": "Does the tumor margin look messier?",
+    "note": "\"Messier\" is a feeling, not a measurement. Whose eyes? How messy is messy? Two people would score it differently. Swap the vibe for a number, nearest-neighbor spacing irregularity, and a control to compare it against, and this becomes a real question."
+  }
+]
+
+export const HYPOTHESES3: HypothesisOpt[] = [
+  {
+    "id": "h1",
+    "text": "At the invasive margin, the carcinoma cells have used LOX to crosslink and stiffen their own matrix, so they crawl up that self-made stiffness gradient (this climbing-toward-stiffer-matrix movement is called durotaxis) and breach the basement membrane, leaving the front more spatially disordered than the matched normal tissue.",
+    "prediction": "If true, then in this model the nearest-neighbor spacing at the margin will be measurably more irregular than in the matched normal tissue, AND the collagen there will read as denser, more aligned, and more crosslinked. If the margin spacing comes out the SAME as normal tissue, this idea is wrong."
+  },
+  {
+    "id": "h2",
+    "text": "The null idea: the invasive margin is not actually different. It is the same organized tissue, and any \"messiness\" we think we see is just us expecting to find it.",
+    "prediction": "If true, then the margin's spacing irregularity will land on top of the normal-tissue value, no measurable gap. Finding a clear, repeatable gap across replicate regions would rule this out."
+  },
+  {
+    "id": "h3",
+    "text": "The alternative idea: there IS a number on the screen, but the disorder is just random imaging noise, dust, focus blur, or segmentation slip, not real biology.",
+    "prediction": "If true, then the disorder will NOT hold up across 3+ replicate sample regions, it will jump around region to region with no pattern. If every replicate region of margin beats every replicate region of normal tissue, noise alone cannot explain it."
+  }
+]
+
+export const CLAIMS3: ClaimOpt[] = [
+  {
+    "id": "c1",
+    "req": 1,
+    "text": "In this model, the invasive margin is more spatially disordered (more irregular nuclear spacing) than the matched organized normal tissue right next to it."
+  },
+  {
+    "id": "c2",
+    "req": 2,
+    "text": "In this model, the matrix at the invasive front is denser and more crosslinked, with more aligned collagen and a higher LOX-crosslink proxy, than the matched normal tissue."
+  },
+  {
+    "id": "c3",
+    "req": 3,
+    "text": "In this model, and reproducibly across replicate sample regions, cells migrate UP the stiffness gradient (durotaxis) toward the breach in the basement membrane."
+  },
+  {
+    "id": "c4",
+    "req": 4,
+    "text": "BLOCKED OVER-CLAIM: Stiffness causes this patient's cancer to spread (metastasize) through the body."
+  }
+]
+
+const CEIL_NOTES3: string[] = [
+  "Reached rung 0 (nothing measured yet): You have not earned any claim. Right now all you have is a picture and a hunch. Measure something before you say anything, even \"the margin looks messier\" is off-limits until a number backs it.",
+  "Reached rung 1 (Voronoi spatial disorder): You can now say \"in this model, the invasive margin is more spatially disordered than the matched normal tissue beside it.\" That is real and earned. You CANNOT yet say anything about the matrix, about why, or about any patient.",
+  "Reached rung 2 (matrix density / crosslink proxy): Add \"the invasive matrix is denser, more aligned, and more crosslinked in this model.\" You have tied disorder to the LOX-stiffening signature. Still a proxy, still a model, still no claim about motion or about a real patient's tissue.",
+  "Reached rung 3 (live durotaxis tracking): Now add \"in the model, cells migrate up the stiffness gradient toward the breach,\" reproducibly across regions. You have caught the motion, not just the still. But this is the model, and you still have no direct stiffness number from a real margin and no claim about spread.",
+  "Reached rung 4 stays LOCKED (direct in-vivo stiffness): Out of reach in this lab. Without AFM or Brillouin microscopy on the real margin you cannot claim the actual stiffness of real tumor tissue, only the model's proxy. The honest ceiling holds: model, not patient.",
+  "Reached rung 5 stays LOCKED (causal proof in a living patient): Permanently out of reach here, and that is the point. You can never claim \"stiffness causes this patient's cancer to spread.\" Local invasion at this margin is not metastasis, and no experiment in this lab isolates stiffness as the cause of spread in a living person."
+]
+
+export function ceilNote3(ceil: number): string {
+  return CEIL_NOTES3[Math.max(0, Math.min(CEIL_NOTES3.length - 1, ceil))]
+}
+
+export const PINNED_QUOTE3 = "A stiffer, more disordered margin in this model is not the same as proof that stiffness drives spread in a patient."
+
+export const CEILING_ASIDE3 =
+  'Even with more grant money, you cannot turn this into proof about a patient. The in-the-body force tool is not in this lab, the sample is a model sibling margin, and a disordered margin (local invasion) is not the same as spread to other organs (metastasis). So the model-level claim stays your ceiling.'
+
+export const MATEO3 = {
+  open: "Content note: this act steps away from Baby Mateo's developing face and studies a clearly-labeled SIBLING sample, a breast-carcinoma invasive margin (a carcinoma is a cancer that starts in the lining cells of a tissue), in a model. Mateo's cells are fine; nothing here happens to him. We are visiting a different patient's story because it shows the same forces from a new angle. Think of it as a sibling, not a sequel. In Act I, cranial neural crest cells read a graded FN1 road and placed the frontal bone in order. In Act II, the very same chain, integrin to focal adhesion to actomyosin tension to YAP/TAZ in the nucleus to a gene decision, tuned whether a cell became bone or cartilage. Now meet a carcinoma cell that has gotten hold of that exact toolkit and is using it in the wrong place, with no off-switch. Not Mateo. A sibling. Same forces, different room.",
+  mid: "Keep the label in front of you: this is a MODEL of a sibling-carcinoma margin, not Mateo's tissue and not a specific real patient on a table somewhere. What you are watching, a carcinoma cell using LOX to stiffen its own matrix, then crawling up that stiffness toward the basement membrane (and using cutting enzymes called MMPs to slice an opening in it), is the same integrin-to-YAP/TAZ chain you already know, simply running out of context. Notice the parallel without fear: nuclear YAP/TAZ on stiff matrix was the CORRECT, healthy bone instruction back in Act II. The identical state is a problem here only because it is in the wrong place, at the wrong time, with nothing telling it to stop. Stiffness is not evil. Context decides. And what you are seeing at this margin is LOCAL invasion, cells crossing into the nearby stroma (the support tissue around the cells), which is not the same thing as cancer spreading to distant organs.",
+  payoff: "Step back and look at all three acts at once. One toolkit. Integrin to focal adhesion to actomyosin tension to YAP/TAZ in the nucleus to a gene decision. In Develop, it built Mateo's face in order, spacing the bone exactly where it belonged. In Differentiate, it tuned each cell's fate, bone or cartilage, by reading stiffness and shape. In Derail, that same chain is hijacked, out of context and with no off-switch, and the reading flips from order to disorder. \\\"Order in development, disorder in disease\\\" is not a poem, it is the literal mechanism: the same forces, reused. That is not a reason to be afraid of your own cells. It is a reason to be amazed by them. The thing that builds you and the thing that can betray a body are written in the same alphabet, and now you can read it, and measure it, and say honestly where the evidence stops. That is what a scientist does.",
+}
+
+export const STAGE_BRIEF3: Record<number, string> = {
+  0: "Stage 0 Ask: Pick the question you can actually measure today, one place, one comparison, one number. \"How does cancer work?\" is a career; \"is this margin more disordered than the normal tissue beside it?\" is a Tuesday. Choose the Tuesday one.",
+  1: "Stage 1 Hypothesize: Give me three real guesses, and for each one tell me the result that would prove it WRONG. A guess you cannot kill is not a hypothesis, it is a wish. Include the boring null, sometimes the margin is just the margin.",
+  2: "Stage 2 Choose tools: Climb only as high as your claim needs. The free Voronoi rung answers our question. Do not reach for the locked in-vivo rungs to brag, reach for the lowest rung that honestly earns your sentence.",
+  3: "Stage 3 Design: Fairness first. Matched normal tissue as the control, at least three replicate regions, and a label that says MODEL sibling-carcinoma margin, not Mateo, not a specific patient. Write that label before you write anything else.",
+  4: "Stage 4 Run/Measure: Same tools, opposite reading. The Voronoi engine that scored ORDER in the developing face now scores DISORDER at the breach. Watch the cells climb the stiffness gradient they built and cross the membrane. Measure it, do not just admire it.",
+  5: "Stage 5 Analyze: One dramatic field is a story, not evidence. Agreement across replicate REGIONS (per region, not per cell) is what counts. If only one region carries the result, you have an anecdote, not a finding.",
+  6: "Stage 6 Conclude: Say exactly what you earned, \"in this model the margin is more disordered and denser than matched normal tissue,\" and refuse what you did not, \"stiffness causes this patient to metastasize.\" Naming the gap out loud is the strongest move you can make.",
+  7: "Stage 7 Iterate: Step back and feel it. The same chain that built the face in order (Develop) and told each cell what to become (Differentiate) is here, out of place, driving disorder (Derail). One toolkit. Then name what a real lab would need to go further, honestly.",
+}
+
+/** Short, distinct GOAL per step (the words-first header), separate from the longer brief. */
+export const STAGE_GOAL3: Record<number, string> = {
+  0: 'Pick one measurable question at this margin: one place, one comparison, one number.',
+  1: 'Give three real guesses, each with the result that would prove it wrong.',
+  2: 'Reach for the lowest rung that honestly earns your sentence, not the flashiest.',
+  3: 'Make it fair: matched normal tissue as control, enough regions, and a clear MODEL label.',
+  4: 'Measure both the normal tissue and the invasive front, then compare the disorder.',
+  5: 'Trust the result only if it holds across replicate regions, not one field.',
+  6: 'Say only what the model earns, and refuse "stiffness makes this patient metastasize."',
+  7: 'Close the loop: one toolkit, order in development and disorder in disease.',
+}
+
+/** The margin pipeline behind the Run/Measure step, in plain words. */
+export const PROCESS_STEPS3: { label: string; text: string }[] = [
+  { label: 'The sample', text: 'A labeled MODEL of a tumor\'s invasive margin, not a real patient. You compare the invasive front against matched normal tissue.' },
+  { label: 'Same tools', text: 'The same Cellpose and Voronoi tools that scored ORDER in the developing face now score DISORDER at the margin.' },
+  { label: 'Measure both', text: 'You measure spacing in both the normal tissue and the invasive front, then compare.' },
+  { label: 'Compare regions', text: 'Agreement across several regions (not single cells) is what makes it a finding, not an anecdote.' },
+]
+
+export const PASS_LINE3: Record<number, string> = {
+  0: "Nice. You measured instead of guessed, that is the whole game.",
+  1: "That answer holds up. Wrong turns were always safe here, but this one landed.",
+  2: "You earned that claim and stopped exactly where the evidence stopped. That is real science.",
+  3: "Clean work. You let the number talk and you listened.",
+  4: "Yes. You picked the lowest rung that did the job, no showing off, just honesty.",
+  5: "Strong. You named the gap instead of papering over it, that is the hard part and you did it.",
+  6: "That is the move, control first, claim second. You kept it fair.",
+  7: "You saw the same toolkit reading the opposite way and you did not flinch. Onward.",
+}
+
+export const REFLECT3: Record<number, StageReflection> = {
+  0: {
+    "task": "In your own words, write one testable question for this tumor-margin model. Start with the sibling-carcinoma content note, then say exactly what two things you will compare and what you will measure.",
+    "hint": "A testable question names a comparison (margin vs matched normal tissue) and something you can actually measure in this image (spatial disorder).",
+    "exemplarAnswer": "Content note: this is a separate, clearly labeled breast-carcinoma sample, a sibling story to Mateo's developing face, not Mateo's own cells. My question: at this carcinoma's invasive margin in the model, are the cell nuclei more spatially disordered (more irregular spacing) than in the matched organized normal tissue sitting right next to it? I can measure that with the same Voronoi nearest-neighbor tools from Act I.",
+    "components": [
+      {
+        "label": "Names a clear comparison",
+        "why": "It pits the invasive margin against a matched normal-tissue control, so the question can actually be answered, not just admired."
+      },
+      {
+        "label": "Measures something real in the image",
+        "why": "Spatial disorder (nuclear spacing irregularity) is something the Voronoi tools can score, so the question is testable, not vague."
+      },
+      {
+        "label": "Keeps the sibling framing honest",
+        "why": "Saying it is a separate, labeled sample up front keeps this as awe at a shared mechanism, not a claim that Mateo's cells turned cancerous."
+      }
+    ],
+    "takeaway": "A good question names what you compare and what you measure, and it labels the sample honestly before you measure anything."
+  },
+  1: {
+    "task": "Put each of the three hypotheses into your own words. Do not copy the cards, explain what each one actually claims, the way you would to a friend.",
+    "hint": "Then use the cards: for each idea, say the result you would expect to see in the data if it were true, and why, before you flip to check.",
+    "exemplarAnswer": "In my own words: (A) hijack idea, the carcinoma cells use LOX to stiffen their own matrix and climb that stiffness (durotaxis) to breach the margin, so the front is more disordered than matched normal tissue; (B) null, the margin is no different from normal tissue; (C) noise, any 'disorder' is just imaging or measurement scatter. What I expect: if A is right, the margin spacing reads measurably more irregular than normal tissue and the collagen reads denser and more crosslinked, because the cells built and then climbed that stiffness. If B is right, the two overlap with no gap. If C is right, the disorder does not hold up across 3 or more replicate regions.",
+    "components": [
+      {
+        "label": "Each idea in your own words",
+        "why": "Re-saying a claim in plain words is how you find out whether you actually understand it, instead of copying the card."
+      },
+      {
+        "label": "A clear expected result for each",
+        "why": "A hypothesis is only useful if it predicts something the measurement could show or fail to show. Name that result for every rival."
+      },
+      {
+        "label": "A reason the result follows",
+        "why": "The 'because' is the mechanism. For the hijack idea it is LOX-built stiffness and durotaxis, the same chain reused out of context, never cells 'turning back into embryos'."
+      }
+    ],
+    "takeaway": "When you can put each rival idea in your own words and say the result it predicts and why, you are ready to let the data choose between them."
+  },
+  2: {
+    "task": "Pick which rung of the Measurement Ladder licenses your claim, and write the exact claim that rung allows. Name one higher rung you did NOT use and what it would take to reach it.",
+    "hint": "Each rung licenses a bigger claim; only claim what the tool you actually used can support.",
+    "exemplarAnswer": "I used Rung 1, free spatial disorder (Voronoi nearest-neighbor irregularity at the margin), and Rung 2, the ECM readout (collagen alignment plus a LOX-crosslink density proxy in the image). Together they license: 'in this model, the invasive margin is more spatially disordered, and its matrix is denser and more crosslinked, than the matched normal tissue next to it.' I did NOT use Rung 4, direct in-vivo stiffness of the real margin (special force-measuring instruments such as AFM or Brillouin), which needs that equipment, an operator, an interpreter, and dead tissue, none of which I have here. So I cannot yet claim the matrix is physically stiffer in a patient.",
+    "components": [
+      {
+        "label": "Matches claim to the rungs used",
+        "why": "Claiming only what Rungs 1 and 2 support keeps the conclusion honest and inside the evidence."
+      },
+      {
+        "label": "Names a locked higher rung",
+        "why": "Pointing to Rung 4 and what it costs shows the student knows the gap between disorder in an image and force in a patient."
+      },
+      {
+        "label": "Distinguishes disorder from stiffness",
+        "why": "Spatial disorder and a crosslink proxy are still image readouts, not a direct force measurement, so the claim stays at 'more disordered and denser,' not 'stiffer in a patient.'"
+      }
+    ],
+    "takeaway": "Choose your tools first, then claim only what those rungs of the ladder can actually license."
+  },
+  3: {
+    "task": "Describe how you make this a FAIR test. Name your control, how many replicate regions you use, and write the honest label that goes on the sample.",
+    "hint": "Fair means a matched control, more than one region, and a label that says exactly what the sample is and is not.",
+    "exemplarAnswer": "Control: the matched organized normal tissue sitting right next to the margin, imaged the same way. Replicates: at least three separate sample regions of the invasive front, not just one pretty spot. Honest label: 'Model sibling-carcinoma invasive margin. This is a separate breast-carcinoma sample, not Mateo's tissue and not any one real patient. It shows local invasion at a margin, where cells cross into the nearby stroma (the supporting tissue around the cells), not spread to other organs.'",
+    "components": [
+      {
+        "label": "Matched control next door",
+        "why": "Comparing the margin to normal tissue from the same image rules out 'all tissue just looks messy,' isolating the margin effect."
+      },
+      {
+        "label": "Three or more regions",
+        "why": "Multiple regions guard against being fooled by one unusual field before you have even measured."
+      },
+      {
+        "label": "Label says what it is NOT",
+        "why": "Stating sibling-not-patient and local-invasion-not-metastasis on the sample itself keeps every later claim honest."
+      }
+    ],
+    "takeaway": "A fair test needs a matched control, several regions, and a label that admits the model's limits up front."
+  },
+  4: {
+    "task": "After running the Voronoi margin bench and watching the durotaxis animation, write what you observed in plain words. Describe the order-to-disorder reuse you saw without overclaiming.",
+    "hint": "Report what the tools showed: the disorder reading, the matrix readout, the breach, and that it is the SAME chain from earlier acts, used out of context.",
+    "exemplarAnswer": "The same Voronoi tools that scored neat, even spacing in Act I scored the opposite here: the normal tissue was orderly with an intact basement membrane, while the invasive front was scattered and irregular, and the matrix readout showed denser, more crosslinked collagen at the front. In the animation, cells climbed up the LOX-stiffened stiffness gradient they made themselves (durotaxis) and crossed the basement membrane into the nearby stroma (the supporting tissue around the cells). It is the same integrin to focal adhesion to tension to nuclear YAP/TAZ chain, just running in the wrong place with no off-switch.",
+    "components": [
+      {
+        "label": "Same tools, opposite reading",
+        "why": "Naming that Act I's order-scoring tools now score disorder makes the 'one toolkit, two readings' idea concrete."
+      },
+      {
+        "label": "Reuse, not reversal",
+        "why": "Saying the same chain runs out of context, with no off-switch, honors the guardrail against 'cells becoming embryos again.'"
+      },
+      {
+        "label": "Local invasion only",
+        "why": "Describing the breach into nearby stroma, not other organs, keeps invasion separate from metastasis."
+      }
+    ],
+    "takeaway": "Record what the tools actually showed: the same force chain, reused out of context, scoring disorder where it once scored order."
+  },
+  5: {
+    "task": "Explain why one striking field is not enough. Write how you would decide the disorder difference is real, counting the right thing.",
+    "hint": "Count regions, not cells: agreement across replicate sample regions is the evidence, not one dramatic picture.",
+    "exemplarAnswer": "One vivid field is just an anecdote; a single striking margin could be a fluke or a bad crop. To trust it, I check whether the disorder score is higher at the margin than in matched normal tissue across all three replicate regions, comparing per region rather than per cell (counting hundreds of cells from one image as one region would be pseudoreplication and would fake my confidence). If the regions agree, the difference is real for this model.",
+    "components": [
+      {
+        "label": "Rejects the single anecdote",
+        "why": "Refusing to trust one field forces the evidence to come from agreement, not from the most dramatic picture."
+      },
+      {
+        "label": "Counts regions, not cells",
+        "why": "Per-region comparison avoids pseudoreplication, so the confidence is honest rather than inflated by cell count."
+      },
+      {
+        "label": "Stays inside the model",
+        "why": "Concluding it is real 'for this model' keeps the result from quietly becoming a claim about patients."
+      }
+    ],
+    "takeaway": "Trust agreement across replicate regions, not one striking field, and count regions rather than cells."
+  },
+  6: {
+    "task": "Write your conclusion: the valid claim this model supports, AND the over-claim you are blocked from making, with the gap named.",
+    "hint": "Valid claim stays inside the ceiling; the blocked claim names model-not-patient, local-invasion-not-metastasis, and no in-vivo force tool.",
+    "exemplarAnswer": "Valid claim: in this model, the invasive margin is more spatially disordered (and, by the matrix readout, denser and more crosslinked) than the matched normal tissue beside it. Blocked over-claim: 'stiffness causes this patient's cancer to spread.' The gap: this is a model sibling sample, not a real patient; what I measured is local invasion at a margin, not metastasis to other organs; and I have no in-vivo tool to prove force itself drives anything. A stiffer, more disordered margin in this model is not proof that stiffness drives spread in a patient.",
+    "components": [
+      {
+        "label": "Valid claim inside the ceiling",
+        "why": "It reports disorder and density in the model, exactly what Rungs 1 and 2 license, and nothing more."
+      },
+      {
+        "label": "Names all three gaps",
+        "why": "Model-not-patient, invasion-not-metastasis, and no causal force tool are the precise reasons the big claim is blocked."
+      },
+      {
+        "label": "Echoes the honesty refrain",
+        "why": "Restating that a disordered margin is not proof of spread keeps the Measurement-Ladder discipline from Acts I and II."
+      }
+    ],
+    "takeaway": "State the claim the model earns, then name exactly why the patient-level over-claim stays out of reach."
+  },
+  7: {
+    "task": "Close the trilogy in your own words. Tie Develop, Differentiate, and Derail to the one shared force chain, ending on awe and on what a real lab would still need.",
+    "hint": "One toolkit: built in order, tuned for fate, hijacked into disorder. End with respect and one honest next step.",
+    "exemplarAnswer": "The same chain runs through all three acts: integrin to focal adhesion to actomyosin tension to nuclear YAP/TAZ to a gene decision. Develop BUILT the face in order by reading a graded road. Differentiate TUNED fate, where stiff matrix and nuclear YAP/TAZ were the correct, healthy bone instruction. Derail HIJACKS that very same chain out of context, with no off-switch, so the same state turns disorder loose at a margin. Order in development, disorder in disease, one toolkit. The awe is that nothing new had to be invented; context decides. To go further honestly, a real lab would need direct in-vivo stiffness measurement and a causal force tool, which this model does not have.",
+    "components": [
+      {
+        "label": "Names the single shared chain",
+        "why": "Spelling out integrin to YAP/TAZ to gene decision shows it is literally one toolkit across all three acts."
+      },
+      {
+        "label": "Same state, context decides",
+        "why": "Noting nuclear YAP/TAZ was healthy in Act II and pathological here lands the awe without fear-mongering or calling stiffness 'evil.'"
+      },
+      {
+        "label": "Honest next step",
+        "why": "Ending on the in-vivo and causal tools the model lacks keeps the awe paired with scientific humility."
+      }
+    ],
+    "takeaway": "The throughline is one force chain built, tuned, and hijacked; context, not the toolkit, decides order or disorder."
+  },
+}
+
+export const CHAPTERS3: LibraryChapter[] = [
+  {
+    "id": "lox-stiffness",
+    "title": "How a tumor stiffens its own road",
+    "summary": "Content note: this chapter steps away from Baby Mateo and looks at a clearly labeled sibling sample, a breast carcinoma (a cancer that starts in the epithelial cells that line and cover tissue), reviewed by a developmental and cancer biologist before any student use. It is here because the same force chain you have followed all year shows up again, used out of context. A carcinoma cell can stiffen its own surrounding matrix by using the enzyme LOX to crosslink collagen, build a stiffness gradient it made itself, and crawl up that gradient. The very chain that told a healthy crest cell to make bone (integrin, focal adhesion, actomyosin tension, nuclear YAP/TAZ, a gene decision) gets over-driven here, in the wrong place and with no off-switch. Same toolkit, opposite story.",
+    "readMinutes": 10,
+    "sections": [
+      {
+        "heading": "A sibling sample, not Mateo, and why it belongs here",
+        "paragraphs": [
+          "A quick and honest note before anything else. Everything in this Act III chapter is about a different sample from Baby Mateo: a breast carcinoma (a cancer that starts in the epithelial cells that line and cover tissue), studied in a model, and reviewed by a developmental and cancer biologist before it ever reaches a student. Mateo's story is a developmental one about building a face in order. This cancer story is a sibling that happens to reuse the same forces. They are relatives that share a toolkit, nothing more. We are not saying Mateo's cells turned into cancer, and we are not telling you a scary thing about him. We are pointing at a shared mechanism and feeling awe that biology reuses its parts.",
+          "Here is the throughline that has run through all three acts, written out one more time so you can see it whole. Integrin grabs the matrix, a focal adhesion forms, actomyosin tension builds, YAP and TAZ move into the nucleus, and a gene decision follows. Act I, Develop, built that chain to position the frontal bone. Act II, Differentiate, tuned that chain so a stiffer, flatter setting nudged a crest cell toward bone instead of its cartilage default. Act III, Derail, watches a tumor hijack that same chain. The chain itself is not good or evil. Context is what decides.",
+          "So why study cancer with the same lens at all? Because it is one of the most striking facts in modern biology that a tumor does not invent a brand-new machine. It picks up tools that were built for orderly development and runs them out of context. The refrain for this act, order in development, disorder in disease, is not a poem. It is a literal description of one toolkit producing order in one setting and disorder in another. Reading the cancer story carefully is how you really understand the developmental one.",
+          "One guardrail to hold onto from the very start. Cancer here is reuse, not reversal. The carcinoma cell is not turning back into an embryo, and it is not becoming a baby again. It is an adult cell misusing developmental tools while staying very much an adult cancer cell. Whenever you are tempted to say a tumor reverses development, swap in the word hijack instead. That single word keeps the science honest."
+        ],
+        "terms": [
+          "carcinoma",
+          "sibling sample",
+          "model",
+          "force chain",
+          "hijack",
+          "reuse not reversal"
+        ]
+      },
+      {
+        "heading": "LOX crosslinks collagen and stiffens the matrix",
+        "paragraphs": [
+          "Start with the road itself. Around every tissue sits the extracellular matrix, the ECM, a web of proteins that cells live on and pull against. The most abundant rope in that web is collagen. How stiff a tissue feels to a cell depends a lot on how tightly those collagen ropes are tied to each other. Loose, separate ropes feel soft. Ropes that are lashed together into thick, aligned cables feel stiff. Stiffness, to a cell, is mostly a question of crosslinking.",
+          "A carcinoma cell can change that on purpose. It secretes an enzyme called LOX, short for lysyl oxidase. LOX works like a chemical knot-tier: it creates covalent crosslinks between collagen fibers, lashing the separate ropes into denser, stiffer, more aligned cables. As LOX does its work, the matrix at the tumor's edge becomes measurably stiffer and more organized into thick bundles. The striking part is that the tumor is doing this to its own surroundings. It is paving and hardening the road it is about to travel, building a stiffness gradient that did not exist before and that points away from the tumor into the neighboring tissue.",
+          "This is the model basis to name plainly. The link between LOX, collagen crosslinking, matrix stiffening, and invasion comes from a well-evidenced line of cancer mechanobiology research, work associated with Valerie Weaver, Kandice Levental, and their colleagues. We treat it as a model, a strong and well-supported one, not as a claim about any specific patient. We do not invent patient numbers. What we carry forward is the mechanism: an enzyme a tumor makes can stiffen the tumor's own matrix, and that self-made stiffness becomes a signal.",
+          "Notice how cleanly this connects back to Act II. There, you learned that a stiffer substrate pushes harder on the integrin to nucleus chain and biases fate. The difference in Act III is who set the stiffness. In development, the matrix stiffness a crest cell felt was part of an orderly, regulated landscape. Here, the cell is manufacturing its own stiff landscape, with no overseer making sure the level is right or the timing is appropriate."
+        ],
+        "terms": [
+          "extracellular matrix (ECM)",
+          "collagen",
+          "LOX (lysyl oxidase)",
+          "crosslinking",
+          "matrix stiffness",
+          "stiffness gradient"
+        ]
+      },
+      {
+        "heading": "Durotaxis: crawling up the gradient it built",
+        "paragraphs": [
+          "Cells can sense stiffness, and many cells will preferentially move toward the stiffer side of a gradient. That behavior has a name: durotaxis, migration up a stiffness gradient. Think of it as the cell feeling which direction the ground gets firmer and then leaning its movement that way. Durotaxis is not unique to cancer. It is a normal capability of many cells. What makes it dangerous here is the setting it is unleashed in.",
+          "Put the two pieces together and you get the hijack in motion. The carcinoma cell uses LOX to stiffen the matrix at its edge, which creates a stiffness gradient pointing outward into the surrounding tissue. Then the cell performs durotaxis up that very gradient, migrating toward and into the tissue it just hardened. The tumor builds its own on-ramp and then drives up it. This is the engine behind local invasion at the tumor margin, and it is the behavior the Run and Measure bench animates: cells climbing the LOX-stiffened gradient toward the boundary of the normal tissue.",
+          "It is worth pausing on how elegant and how unsettling this is at the same time. Durotaxis is a tidy, useful behavior. A cell following a stiffness cue is, in a healthy embryo, part of how tissues get organized. The same behavior, pointed up a gradient the tumor manufactured for itself, becomes a mechanism of invasion. Nothing about durotaxis changed. The context changed: who built the gradient, where it points, and whether anything is regulating it.",
+          "Keep the honesty rail visible here too. In our bench, we watch cells move up a modeled gradient toward a modeled boundary. Watching modeled cells durotax is evidence about the model. It is not a direct measurement of force inside a living patient's tumor, and it is not proof that this drives spread in a person. Those are different, harder claims that sit on higher, locked rungs of the Measurement Ladder."
+        ],
+        "terms": [
+          "durotaxis",
+          "stiffness gradient",
+          "migration",
+          "local invasion",
+          "tumor margin",
+          "model"
+        ]
+      },
+      {
+        "heading": "The same chain, over-driven, with no off-switch",
+        "paragraphs": [
+          "Now follow the self-made stiffness into the cell, and watch it run the exact chain you already know. A stiffer matrix gives integrins more to grab, so more integrins cluster. More integrin clustering builds more and larger focal adhesions, the anchored plaques where the cell grips the matrix. More focal adhesions let the actomyosin network pull harder, raising the cell's internal tension. Higher tension pushes YAP and TAZ out of the cytoplasm, where they normally sit when the signal is off, and into the nucleus, where they switch on their target genes, including CTGF (also called CCN2) and CYR61 (also called CCN1). This is, beat for beat, the Act II chain. The molecules are the same.",
+          "So what makes this pathological rather than helpful, since it is the identical state? Two things, and only two things, and both are about context, not about the chain being evil. First, place and time. Nuclear YAP and TAZ on a stiff matrix was the correct, healthy instruction in Act II, the green light for bone in exactly the spot bone belonged. Here the same state is switched on in adult tissue where it does not belong, at a time when it should be quiet. Second, regulation. In development this chain is tuned, it has brakes and an appropriate ceiling. In the tumor the cell over-drives the chain on stiffness it manufactured itself, and the normal off-switch is missing, so the signal runs and runs.",
+          "This is the awe-inducing parallel, and it is worth stating without any fear in it. Stiffness is not inherently bad. Nuclear YAP and TAZ are not inherently bad. The very same molecular state is the right answer in one place and the wrong answer in another. Biology did not build a separate cancer machine. It built one beautiful, reusable machine for development, and a tumor is what you get when that machine is run out of context with the brakes gone. Understanding the healthy version is understanding the disease version, because they are the same version.",
+          "Hold the boundary on language one more time. Saying the chain is over-driven is accurate. Saying the cell reverted to an embryo is not. The carcinoma cell stays an adult cancer cell the whole time. It is reusing a developmental toolkit, not rewinding its own history. Reuse and hijack are the honest words. Reversal is the word to retire."
+        ],
+        "terms": [
+          "integrin",
+          "focal adhesion",
+          "actomyosin tension",
+          "YAP/TAZ",
+          "CTGF (CCN2)",
+          "CYR61 (CCN1)",
+          "off-switch"
+        ]
+      }
+    ],
+    "known": [
+      "A carcinoma cell can stiffen its own surrounding matrix: LOX (lysyl oxidase) crosslinks collagen fibers into denser, stiffer, more aligned cables.",
+      "That self-made stiffness builds a gradient, and cells perform durotaxis, migrating up the stiffness gradient they themselves created, toward the surrounding tissue.",
+      "The stiffened matrix over-drives the same chain from Act II: more integrin clustering, more focal adhesions, more actomyosin tension, more nuclear YAP/TAZ, and the same targets CTGF (CCN2) and CYR61 (CCN1).",
+      "Nuclear YAP/TAZ on stiff matrix was the correct healthy bone instruction in Act II; the identical state is pathological here only because it is in the wrong place and time, with no off-switch.",
+      "The LOX, stiffening, and durotaxis story (Weaver, Levental and colleagues) is a strong, well-evidenced model basis, used here explicitly as a model.",
+      "Cancer reuses developmental tools out of context. It is a hijack, not a reversal: the cell does not turn back into an embryo."
+    ],
+    "unknown": [
+      "The exact stiffness or force numbers inside a living patient's tumor margin, since no direct in-vivo mechanics measurement (instruments that physically measure tissue stiffness, like atomic force microscopy, AFM, or Brillouin microscopy) is made in this lab.",
+      "Whether the stiffness the cells respond to in a real margin comes mainly from LOX crosslinking, from other matrix changes, or from a mix.",
+      "Whether durotaxis observed in a model behaves the same way, at the same strength, inside living tissue.",
+      "Whether stiffness alone, as opposed to stiffness plus many other tumor changes, is enough to drive cell movement at a real margin.",
+      "Whether the over-driven YAP/TAZ state is a cause of invasion, a consequence of it, or both at once, which a snapshot cannot settle."
+    ],
+    "keyQuestions": [
+      "If LOX crosslinks collagen to stiffen the matrix, and the same Act II chain runs on that stiffness, what exactly is different here, and why is place and time, not the chain itself, the honest answer?",
+      "Given that a cell can build its own stiffness gradient and then durotax up it, what would I need to measure to show the gradient causes the movement, rather than just travels alongside it?",
+      "If nuclear YAP/TAZ on stiff matrix was the correct bone instruction in Act II, what is the strongest claim I can make when I see the same state in this carcinoma model, and which claim about a patient would I be smuggling in if I overreached?"
+    ]
+  },
+  {
+    "id": "invasive-margin",
+    "title": "The invasive margin: a wall is crossed",
+    "summary": "Normal tissue is walled off from its neighbors by the basement membrane, a thin dense sheet. Local invasion is the moment cells breach that wall and push into the nearby stroma. This chapter covers the wall and how MMP enzymes cut it, how EMT loosens cells to enable invasion without being the same thing as metastasis, and the crucial difference between local invasion at the margin and distant spread. It closes by explaining why the same Voronoi disorder tools that scored order in Act I now read disorder here: one toolkit, opposite readings.",
+    "readMinutes": 10,
+    "sections": [
+      {
+        "heading": "The basement membrane is a wall, and MMPs are the scissors",
+        "paragraphs": [
+          "Healthy tissue is not a free-for-all. Epithelial tissue, the kind a carcinoma comes from, sits on a thin, dense sheet called the basement membrane. Think of it as a wall, or a fence line. On one side is the orderly epithelial layer where the cells belong. On the other side is the stroma, the supporting connective tissue with its own matrix, blood vessels, and cells. The basement membrane is the boundary that keeps tissue compartments separate and keeps epithelial cells on their own side. For a tumor to invade locally, that wall has to be crossed.",
+          "Cells cross it by cutting it. Tumor cells and nearby cells release enzymes called MMPs, matrix metalloproteinases, which act like molecular scissors that snip through matrix proteins, including the basement membrane itself. Where MMPs cut, a gap opens in the wall. Combine that with the durotaxis engine from the previous chapter, cells crawling up the stiffness gradient they built, and you get the full picture: the matrix is stiffened by LOX, the wall is cut by MMPs, and cells migrate through the breach into the stroma.",
+          "This is precisely what the Run and Measure bench shows you as an animation. Organized normal tissue, with its cells evenly spaced and its basement membrane intact, sits next to a disorganized invasive front where the membrane has been breached and cells have spilled across. The breach is the headline event. A wall that is supposed to stay closed has been cut open, and cells that are supposed to stay on one side are now on the other.",
+          "Two honest reminders. First, this is a model and a sibling sample, a labeled breast carcinoma margin, not Mateo and not a specific real patient. Second, crossing the basement membrane into nearby stroma is local invasion. It is a real and serious step, and it is also a different thing from cells traveling to distant organs. Keep those two ideas in separate boxes, because the rest of this chapter depends on not mixing them up."
+        ],
+        "terms": [
+          "basement membrane",
+          "stroma",
+          "epithelial tissue",
+          "MMPs (matrix metalloproteinases)",
+          "breach",
+          "local invasion"
+        ]
+      },
+      {
+        "heading": "EMT enables invasion, but EMT does not equal metastasis",
+        "paragraphs": [
+          "To squeeze through a breach and crawl into the stroma, a cell has to change how it behaves. A settled epithelial cell is glued tightly to its neighbors and stays put. A migrating cell needs to loosen those glue points and become mobile and crawling. The program that makes that switch is called EMT, the epithelial-to-mesenchymal transition. You have met this idea before: in Act I, neural crest cells used an EMT to loosen up and begin their migration to build the face. The same kind of transition that helped build Mateo's face in an orderly way is reused, out of context, to enable invasion here. Reuse, not reversal, once again.",
+          "Here is the distinction the whole chapter is built to protect. EMT enables invasion. EMT is not the same thing as metastasis. EMT loosens a cell so it can move and cross the membrane. Metastasis is the much larger, multi-step journey of cells traveling to and colonizing a distant organ. A cell can undergo EMT and invade locally without ever seeding a distant tumor. Treating EMT as if it equals metastasis collapses many separate, hard steps into one word, and that is exactly the kind of overclaim this app trains you to catch.",
+          "There is genuine scientific debate in here, and it would be dishonest to hide it. Whether EMT is strictly required for metastasis is still argued among researchers. Some evidence supports it, some questions it, and the matter is not settled. So we say EMT enables invasion, which is well supported, and we do not say EMT is required for spread, which is not settled. When the science is genuinely open, the honest move is to name the debate, not to pick a side and present it as fact.",
+          "So the careful sentence to carry out of this section is this: in this model, an EMT program loosens cells so they can invade locally across a breached basement membrane. That sentence is true and bounded. Everything beyond it, required for metastasis, drives spread in a patient, lives on locked rungs of the ladder, where we are honest that we cannot reach."
+        ],
+        "terms": [
+          "EMT (epithelial-to-mesenchymal transition)",
+          "cell-cell adhesion",
+          "invasion",
+          "metastasis",
+          "local invasion",
+          "scientific debate"
+        ]
+      },
+      {
+        "heading": "Local invasion is not distant spread",
+        "paragraphs": [
+          "This section exists to draw one bright line and never let it blur. Local invasion is cells crossing the basement membrane into the nearby stroma, the tissue right next door. Distant spread, metastasis, is cells leaving the original tumor, surviving travel through the body, and growing a new tumor in a faraway organ. The margin image in this app shows the first thing. It does not show the second thing. A breached membrane and cells in the adjacent stroma is local invasion, full stop.",
+          "Why hammer this so hard? Because the easy, tempting overclaim is to look at a disordered, breached margin and conclude the cancer is spreading through the body. That leap skips many separate biological steps, each of which is its own difficult question, and each of which our model does not observe. Picture the bright line as a literal line drawn on the margin image: inside it, what we can honestly say from this model, cells have invaded locally; outside it, claims about distant organs, which this model cannot support.",
+          "This is the Act III version of the Measurement Ladder honesty you practiced in Act I. The blocked overclaim students reach for is stiffness causes metastasis in the patient. The honest gap has three named parts: this is a model and a sibling sample, not a specific patient; what we see is local invasion, which is not metastasis; and we have no in-vivo causal force tool to prove stiffness drives anything in a living person. The honest ceiling refrain becomes: a stiffer, more disordered margin in this model is not the same as proof that stiffness drives spread in a patient.",
+          "None of this makes the science less remarkable. It makes the claims trustworthy. Saying exactly what the picture shows, local invasion across a breached wall in a model, and refusing to inflate it into proof of distant spread in a person, is what separates a real measurement from a scary headline. The bright line is not timidity. It is rigor."
+        ],
+        "terms": [
+          "local invasion",
+          "metastasis",
+          "distant spread",
+          "Measurement Ladder",
+          "honest ceiling",
+          "overclaim"
+        ]
+      },
+      {
+        "heading": "The same Voronoi tools now read disorder, not order",
+        "paragraphs": [
+          "Here is the closing turn of the whole trilogy, and it is the reason the bench reuses the Act I engine on purpose. In Act I you measured order. You used Cellpose to find nuclei, drew a Voronoi diagram around them, and computed nearest-neighbor spacing to score how evenly the cells were arranged. Even, regular spacing meant organized tissue. The tools were built to detect and praise order, and they did.",
+          "Run those exact same tools on the tumor margin and they tell the opposite story, without changing a single setting. On the normal-tissue side, the nuclei are evenly spaced, the Voronoi cells are regular, and the nearest-neighbor distances are tidy: high order. Across the breached basement membrane at the invasive front, the nuclei are scattered, the Voronoi cells are irregular, and the spacing is erratic: high disorder. The same measurement that scored order in Act I now scores disorder here. One toolkit, opposite readings, and the contrast is the point. The number does not change its meaning. The tissue changed.",
+          "And this lands the throughline that has carried all three acts. The same chain, integrin to focal adhesion to actomyosin tension to nuclear YAP/TAZ to a gene decision, built the face in order in Develop, told each cell what to become in Differentiate, and is hijacked to drive disorder in Derail. Order in development, disorder in disease, one toolkit. That is not a slogan laid over the biology. It is the literal mechanism: the same parts, used in context, build order, and the same parts, used out of context with no off-switch, produce disorder.",
+          "End on awe, not fear, and end on honesty about what a real lab would need to go further. To say more than this model can, a lab would have to climb the locked rungs: directly measure the stiffness or force of a real margin with instruments that physically measure tissue stiffness, like atomic force microscopy (AFM) or Brillouin microscopy, on suitable tissue, with a trained operator and interpreter, and then somehow show that stiffness alone drives spread in a living patient, a causal claim no snapshot can settle. We are honest that we cannot reach those rungs here. What we can do, and what is genuinely amazing, is recognize one toolkit doing two opposite jobs, and measure the difference between order and disorder with the very same ruler."
+        ],
+        "terms": [
+          "Voronoi diagram",
+          "nearest-neighbor spacing",
+          "Cellpose",
+          "spatial disorder",
+          "invasive front",
+          "one toolkit, opposite readings"
+        ]
+      }
+    ],
+    "known": [
+      "Normal tissue is walled off by the basement membrane, a thin dense sheet; local invasion is the breach of that wall into the nearby stroma.",
+      "MMPs (matrix metalloproteinases) cut the basement membrane, opening the breach that durotaxing cells move through.",
+      "EMT (epithelial-to-mesenchymal transition) loosens epithelial cells so they can migrate and invade; it is the same kind of transition crest cells used in Act I, reused out of context.",
+      "The margin image shows local invasion (cells crossing into nearby stroma), which is a different, smaller-scale event than metastasis (distant spread to other organs).",
+      "The same Voronoi, nearest-neighbor, and Cellpose tools that scored order in Act I score disorder at the invasive front here: one toolkit, opposite readings.",
+      "The honest ceiling: a stiffer, more disordered margin in this model is not proof that stiffness drives spread in a patient."
+    ],
+    "unknown": [
+      "Whether EMT is strictly required for metastasis is still genuinely debated among researchers; we do not present it as settled.",
+      "Whether cells that invade locally in this model would, in a living body, go on to seed distant tumors, which this model cannot observe.",
+      "The direct in-vivo stiffness or force of a real tumor margin, which would need locked-rung instruments that physically measure tissue stiffness (atomic force microscopy, AFM, or Brillouin microscopy) on suitable tissue with a trained operator and interpreter.",
+      "Whether stiffness alone, separated from the tumor's many other changes, causes invasion or spread in a living patient (no in-vivo causal force tool exists in this lab).",
+      "Whether disorder measured at one striking margin region holds up across replicate sample regions, or is an anecdote until per-region agreement is shown."
+    ],
+    "keyQuestions": [
+      "If the margin image shows a breached basement membrane and scattered cells in the nearby stroma, what is the strongest honest claim (local invasion in a model), and which claim (metastasis in a patient) would I be smuggling in if I overreached?",
+      "Given that EMT enables invasion but whether it is required for metastasis is still debated, how should I word a conclusion so it states what is supported without taking a side on what is unsettled?",
+      "If the very same Voronoi and nearest-neighbor tools scored order in Act I and disorder here, what does that tell me about whether the disorder is real, and how many replicate sample regions would I need before I trust it is not just one striking field?"
+    ]
+  }
+]
+
+export const STAGE_ILLUSTRATIONS3: Record<number, Illustration> = {
+  4: {
+    src: '/illustrations/stage-III-margin.webp',
+    alt: 'A field split into evenly spaced, neatly tiled normal tissue on the left and a scattered, irregular invasive front on the right, divided by a dashed margin line, both read by the same Voronoi tool.',
+    caption: 'The same Voronoi tool that scored order in Act I now scores disorder at the tumor margin: evenly spaced normal tissue versus the scattered invasive front.',
+  },
+}
+
+export const LIBRARY_FOR_STAGE3: Record<number, string> = {
+  0: 'invasive-margin', 1: 'lox-stiffness', 2: 'lox-stiffness', 3: 'invasive-margin',
+  4: 'lox-stiffness', 5: 'invasive-margin', 6: 'invasive-margin', 7: 'lox-stiffness',
+}
+export const READ_BEFORE_CHOOSING3 = new Set<number>([1, 4])
+export const EXTENSIONS3: LibraryExtension[] = []
+
+/** The dramatic act-opening story for Act III (shown before step 1). It sets up the
+ *  invasive-margin measurement through what a scientist observed, the LOX-stiffened
+ *  matrix and the cells climbing it, while holding the reuse-not-reversal guardrail:
+ *  cancer reuses a normal toolkit out of context, it does not revert to an embryo.
+ *  No em dashes. */
+export const ACT3_STORY: ActStoryContent = {
+  kicker: 'BEFORE YOU BEGIN · A STORY FROM THE NOTEBOOKS',
+  title: 'The edge that lost its order',
+  paragraphs: [
+    'Late in the evening a scientist pulls up two pieces of the same tissue, side by side. On the left, normal tissue: cells in neat, predictable rows, the quiet order you would expect. On the right, the invasive margin of a carcinoma, the front line where the tumor pushes into healthy ground. And the order is gone. The cells crowd and sprawl, the spacing ragged, as if something had pulled the grid apart.',
+    'She has seen this chain before, in development. In Act I and Act II the same forces built things: a matrix road, cells that grip and pull, stiffness read all the way to the genes. Here those forces look like they are running again, in the wrong place and with no one to switch them off. Her suspicion: the tumor cells have used an enzyme called LOX to crosslink and stiffen their own matrix, and then they crawl up that self-made stiffness, climbing toward firmer ground, the way a cell in the embryo once followed its road.',
+    "She is careful about what this is not. The cancer cells are not turning back into embryos. They are reusing a normal toolkit out of context, in a body that is already built. The only link to Mateo's case is the toolkit itself: the same family of forces that organizes cells in development can, in a tumor, disorganize them. One set of tools, order in one place, disorder in another.",
+    'A correlation is not a cause. She writes it in the margin and underlines it twice. The margin LOOKS messier. But messier could be real biology, or her own eye expecting to find what she came to find, or nothing more than dust and blur in the image. To say anything real she would have to measure the disorder, compare it against the matched normal tissue right beside it, and show that it holds up across several regions, not just the one that caught her eye.',
+    'She never finished the comparison. Her notebooks are still here, the two tissues side by side, the suspicion about LOX and the climb, the last column left blank. That blank is yours. The clues are in the notebooks. The proof is not. Your work in this act is to take "it looks more disordered" and turn it into a number you can stand behind, or walk away from.',
+  ],
+  clues: [
+    'Work in a team. Put one person on "the tumor is really different" and one on "we only expect it to be," and let the measurement settle the argument.',
+    'Draw the pathway on paper: LOX stiffens the matrix, the cells climb that stiffness (this climb is called durotaxis), the margin loses its order. It is the same chain as Act I and II, running out of place.',
+    'Read the chapter, then open the notebook and keep going. The deeper you read, the more the LM notebooks break the science down, they have explainers built in.',
+    'Clue: always compare the margin to the matched normal tissue next to it, and check that any gap holds across 3 or more regions before you trust it.',
+  ],
+  libraryRef: 'lox-stiffness',
+  notebookLabel: '📓 Open the tumor-stiffening notebook for clues →',
+}
+
+export const ACT3: ActContent = {
+  id: 'derail',
+  index: 3,
+  shortTitle: 'Derail',
+  rungs: RUNGS3,
+  rungNames: RUNG_NAMES3,
+  rungColors: RUNG_COLORS3,
+  rungWhy: RUNG_WHY3,
+  ceilNote: ceilNote3,
+  pinnedQuote: PINNED_QUOTE3,
+  ceilingAside: CEILING_ASIDE3,
+  ladderFooter: 'spatial disorder only',
+  questions: QUESTIONS3,
+  hypotheses: HYPOTHESES3,
+  claims: CLAIMS3,
+  resource: ACT3_RESOURCE,
+  stageLabels: ['Ask', 'Hypothesize', 'Choose tools', 'Design', 'Run / Measure', 'Analyze', 'Conclude', 'Iterate'],
+  stageBrief: STAGE_BRIEF3,
+  stageGoal: STAGE_GOAL3,
+  processSteps: PROCESS_STEPS3,
+  story: ACT3_STORY,
+  passLine: PASS_LINE3,
+  stageIllustrations: STAGE_ILLUSTRATIONS3,
+  reflect: REFLECT3,
+  chapters: CHAPTERS3,
+  libraryForStage: LIBRARY_FOR_STAGE3,
+  readBeforeChoosing: READ_BEFORE_CHOOSING3,
+  extensions: EXTENSIONS3,
+}

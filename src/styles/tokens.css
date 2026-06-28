@@ -1,0 +1,54 @@
+/* Design tokens — three themes, identical variable sets, fluorophore-on-darkfield.
+   Lifted verbatim from the prototype. Theme switch = swap the `data-theme`
+   attribute on the app root; everything reads var(--*). */
+
+[data-theme='darkfield'] {
+  --bg: #04060c;
+  --bg2: #0a0f1a;
+  --panel: #0c1320;
+  --panel2: #111a2b;
+  --line: #1c2840;
+  --text: #e7eef7;
+  --muted: #7f93ad;
+  --c-blue: #37cfe6;
+  --c-green: #46e09a;
+  --c-amber: #f2b54e;
+  --c-pink: #f368ad;
+  --c-red: #ff6b81;
+  --c-violet: #8f7bf2;
+  --accent: #37cfe6;
+}
+
+[data-theme='spectral'] {
+  --bg: #07060f;
+  --bg2: #100e1e;
+  --panel: #13101f;
+  --panel2: #1a1630;
+  --line: #2a2342;
+  --text: #efeaff;
+  --muted: #9a90b8;
+  --c-blue: #7cc6ff;
+  --c-green: #5de0c0;
+  --c-amber: #ffc66e;
+  --c-pink: #ff7bd0;
+  --c-red: #ff6b9d;
+  --c-violet: #a78bfa;
+  --accent: #a78bfa;
+}
+
+[data-theme='amber'] {
+  --bg: #0a0704;
+  --bg2: #140d06;
+  --panel: #160f08;
+  --panel2: #20160c;
+  --line: #34250f;
+  --text: #f5ecdd;
+  --muted: #b39a78;
+  --c-blue: #6cc6c0;
+  --c-green: #9bd05a;
+  --c-amber: #f0a830;
+  --c-pink: #e88a5a;
+  --c-red: #e0603a;
+  --c-violet: #d59a5a;
+  --accent: #f0a830;
+}

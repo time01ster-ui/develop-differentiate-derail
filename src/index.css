@@ -1,0 +1,6 @@
+/* Entry stylesheet. Tailwind (layout/responsive utilities per TOOLING.md) +
+   self-hosted fonts + design tokens + base. All @imports must precede rules. */
+@import 'tailwindcss';
+@import './styles/fonts.css';
+@import './styles/tokens.css';
+@import './styles/base.css';
