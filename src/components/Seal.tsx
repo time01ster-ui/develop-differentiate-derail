@@ -5,6 +5,7 @@
 
 import type { CSSProperties } from 'react'
 import type { ActId } from '../content/types'
+import { asset } from '../lib/asset'
 
 const SRC = {
   pathway: '/brand/pathway-seal.webp',
@@ -52,7 +53,7 @@ export function Seal({
 }) {
   return (
     <img
-      src={SRC[kind]}
+      src={asset(SRC[kind])}
       alt={decorative ? '' : TITLE[kind]}
       title={TITLE[kind]}
       aria-hidden={decorative || undefined}

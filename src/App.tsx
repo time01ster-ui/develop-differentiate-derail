@@ -17,6 +17,7 @@ import { ActStory, ProcessExplainer, StageBanner, StepGoal } from './components/
 import ForcesRail from './components/ForcesRail'
 import { AchievementsPanel, ProgressHud, XpToast } from './components/ProgressHud'
 import { BudgetChip, BudgetPanel } from './components/Budget'
+import { asset } from './lib/asset'
 import { badgeById, loadGame, saveGame, type Badge, type GameState } from './lib/progress'
 import { useTier } from './components/TierContext'
 import AskStage from './components/stages/AskStage'
@@ -295,7 +296,7 @@ export default function App() {
 
       {/* ATIT Research Lab affiliation, pinned top-right on every screen */}
       <img
-        src="/brand/atit-research-lab.webp"
+        src={asset('/brand/atit-research-lab.webp')}
         alt="ATIT Research Lab, Case Western Reserve University"
         title="ATIT Research Lab · Case Western Reserve University"
         style={{

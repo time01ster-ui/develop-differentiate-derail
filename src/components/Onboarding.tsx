@@ -3,6 +3,7 @@ import { STARTING_BUDGET } from '../content/resources'
 import { EmbryoFace } from './art/SciArt'
 import { CharacterAvatar } from './art/Avatars'
 import { Seal } from './Seal'
+import { asset } from '../lib/asset'
 
 const mono = "'IBM Plex Mono'"
 
@@ -13,6 +14,22 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
     <main style={{ position: 'relative', zIndex: 2, flex: 1, overflowY: 'auto' }}>
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '28px 22px 40px' }}>
         <div className="stage-enter" style={{ border: '1px solid var(--line)', borderRadius: 18, background: 'var(--panel)', overflow: 'hidden' }}>
+          {/* The Baby Mateo intro film, at the very top above the Day One header.
+              Click to play (narrated + captioned); preload metadata only so it does
+              not pull the file until a student chooses to watch. */}
+          <div style={{ padding: '16px 20px 8px' }}>
+            <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.12em', color: 'var(--accent)', marginBottom: 8 }}>▶ WATCH FIRST · THE BABY MATEO STORY</div>
+            <video
+              controls
+              playsInline
+              preload="metadata"
+              poster={asset('/intro/baby-mateo-intro-poster.jpg')}
+              style={{ width: '100%', display: 'block', borderRadius: 12, border: '1px solid var(--line)', background: '#000', aspectRatio: '16 / 9' }}
+            >
+              <source src={asset('/intro/baby-mateo-intro.mp4')} type="video/mp4" />
+              <a href={asset('/intro/baby-mateo-intro.mp4')} style={{ color: 'var(--accent)' }}>Download the intro video</a> (your browser cannot play it inline).
+            </video>
+          </div>
           <div style={{ background: 'color-mix(in srgb, var(--accent) 7%, var(--bg2))', borderBottom: '1px solid var(--line)', padding: '14px 22px 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: '.16em', color: 'var(--accent)' }}>{ONBOARDING.kicker}</div>
@@ -22,23 +39,6 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
           </div>
 
           <div style={{ padding: '20px 24px 24px' }}>
-            {/* The Baby Mateo intro film, embedded as the case introduction. Click
-                to play (narrated + captioned); preload metadata only so it does not
-                pull the file until a student chooses to watch. */}
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.12em', color: 'var(--accent)', marginBottom: 8 }}>▶ WATCH FIRST · THE BABY MATEO STORY</div>
-              <video
-                controls
-                playsInline
-                preload="metadata"
-                poster="/intro/baby-mateo-intro-poster.jpg"
-                style={{ width: '100%', display: 'block', borderRadius: 12, border: '1px solid var(--line)', background: '#000', aspectRatio: '16 / 9' }}
-              >
-                <source src="/intro/baby-mateo-intro.mp4" type="video/mp4" />
-                <a href="/intro/baby-mateo-intro.mp4" style={{ color: 'var(--accent)' }}>Download the intro video</a> (your browser cannot play it inline).
-              </video>
-            </div>
-
             <h1 style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 30, lineHeight: 1.12, marginBottom: 14 }}>{ONBOARDING.title}</h1>
 
             <p style={{ color: 'var(--text)', lineHeight: 1.6, fontSize: 15.5, marginBottom: 12 }}>{ONBOARDING.role}</p>

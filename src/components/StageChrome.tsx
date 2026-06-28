@@ -3,6 +3,7 @@ import { getAct } from '../content/registry'
 import type { ActId } from '../content/types'
 import Define from './Define'
 import { CharacterAvatar, MateoMotif } from './art/Avatars'
+import { asset } from '../lib/asset'
 
 const mono = "'IBM Plex Mono'"
 
@@ -156,7 +157,7 @@ export function StageBanner({ step, act = 'develop' }: { step: number; act?: Act
   if (!ill) return null
   return (
     <figure style={{ margin: '0 auto 18px', maxWidth: 560, border: '1px solid var(--line)', borderRadius: 12, background: 'var(--panel2)', overflow: 'hidden' }}>
-      <img src={ill.src} alt={ill.alt} loading="lazy" decoding="async" style={{ display: 'block', width: '100%', height: 'auto' }} />
+      <img src={asset(ill.src)} alt={ill.alt} loading="lazy" decoding="async" style={{ display: 'block', width: '100%', height: 'auto' }} />
       <figcaption style={{ fontFamily: mono, fontSize: 11, color: 'var(--muted)', lineHeight: 1.5, padding: '8px 12px', borderTop: '1px solid var(--line)', textAlign: 'center' }}>{ill.caption}</figcaption>
     </figure>
   )

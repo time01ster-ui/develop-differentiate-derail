@@ -3,6 +3,8 @@
  * Characters give the lab a cast; equipment icons make the ladder rungs concrete.
  */
 
+import { asset } from '../../lib/asset'
+
 type Role = 'pi' | 'operator' | 'interpreter'
 
 const ROLE_COLOR: Record<Role, string> = {
@@ -23,7 +25,7 @@ export function CharacterAvatar({ role, size = 44 }: { role: Role; size?: number
   const color = ROLE_COLOR[role]
   return (
     <img
-      src={ROLE_FACE[role]}
+      src={asset(ROLE_FACE[role])}
       width={size}
       height={size}
       alt={`${role} avatar`}

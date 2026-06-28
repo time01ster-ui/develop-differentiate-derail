@@ -6,6 +6,7 @@ import { lookup } from '../content/glossary'
 import Define from './Define'
 import { Seal } from './Seal'
 import { CollectiveMigration, EmbryoFace, Pseudoreplication, SpacingContrast } from './art/SciArt'
+import { asset } from '../lib/asset'
 
 const mono = "'IBM Plex Mono'"
 
@@ -171,7 +172,7 @@ export default function Library({
 
               {CHAPTER_ILLUSTRATIONS[ch.id] && (
                 <figure style={{ margin: '0 0 20px', border: '1px solid var(--line)', borderRadius: 12, background: 'var(--panel2)', overflow: 'hidden' }}>
-                  <img src={CHAPTER_ILLUSTRATIONS[ch.id].src} alt={CHAPTER_ILLUSTRATIONS[ch.id].alt} loading="lazy" decoding="async" style={{ display: 'block', width: '100%', height: 'auto' }} />
+                  <img src={asset(CHAPTER_ILLUSTRATIONS[ch.id].src)} alt={CHAPTER_ILLUSTRATIONS[ch.id].alt} loading="lazy" decoding="async" style={{ display: 'block', width: '100%', height: 'auto' }} />
                   <figcaption style={{ fontFamily: mono, fontSize: 11, color: 'var(--muted)', lineHeight: 1.5, padding: '8px 12px', borderTop: '1px solid var(--line)' }}>{CHAPTER_ILLUSTRATIONS[ch.id].caption}</figcaption>
                 </figure>
               )}
