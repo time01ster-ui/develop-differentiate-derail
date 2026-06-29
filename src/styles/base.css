@@ -235,3 +235,37 @@ input[type='range']::-moz-range-thumb {
   white-space: nowrap;
   border: 0;
 }
+
+/* Lab-report export. The overlay is portaled to <body> (a sibling of #root), so
+   in print we hide the fixed app shell entirely and let the report flow as a
+   normal document across pages. The toolbar (.ddd-report-noprint) never prints;
+   the paper renders ink-on-white for a clean hand-in / PDF. */
+@media print {
+  body > #root {
+    display: none !important;
+  }
+  html,
+  body,
+  #root {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  .ddd-report-overlay {
+    position: static !important;
+    overflow: visible !important;
+    background: #fff !important;
+    padding: 0 !important;
+  }
+  .ddd-report-noprint {
+    display: none !important;
+  }
+  .ddd-report-paper {
+    box-shadow: none !important;
+    margin: 0 !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+  }
+}

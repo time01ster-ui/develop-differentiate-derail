@@ -29,6 +29,7 @@ import RunStage from './components/stages/RunStage'
 import AnalyzeStage from './components/stages/AnalyzeStage'
 import ConcludeStage from './components/stages/ConcludeStage'
 import IterateStage from './components/stages/IterateStage'
+import LabReportButton from './components/LabReport'
 import { renderAct2Stage } from './components/stages/act2/render'
 import { renderAct3Stage } from './components/stages/act3/render'
 
@@ -387,6 +388,8 @@ export default function App() {
               )}
               {state.step === 4 && <ProcessExplainer act={state.act} />}
               {renderStage()}
+
+              {state.step === 7 && <LabReportButton state={state} reflections={reflections} badges={game.badges} data={data} />}
 
               <ReflectionPanel
                 step={state.step}
