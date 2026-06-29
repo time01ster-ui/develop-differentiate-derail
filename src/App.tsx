@@ -294,23 +294,34 @@ export default function App() {
         actLabel={`Act ${['', 'I', 'II', 'III'][A.index] ?? 'I'}, ${A.shortTitle}`}
       />
 
-      {/* ATIT Research Lab affiliation, pinned top-right on every screen */}
-      <img
-        src={asset('/brand/atit-research-lab.webp')}
-        alt="ATIT Research Lab, Case Western Reserve University"
-        title="ATIT Research Lab · Case Western Reserve University"
+      {/* ATIT Research Lab affiliation, pinned top-right on every screen; links to the official lab site */}
+      <a
+        href="https://case.edu/artsci/biology/atitlab/"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Visit the Atit Research Lab · Case Western Reserve University"
+        aria-label="Atit Research Lab at Case Western Reserve University (opens in a new tab)"
         style={{
           position: 'fixed',
           top: 10,
           right: 16,
-          width: 'clamp(84px, 12vw, 112px)',
-          height: 'auto',
           zIndex: 6,
-          opacity: 0.92,
-          pointerEvents: 'none',
-          userSelect: 'none',
+          display: 'block',
+          lineHeight: 0,
         }}
-      />
+      >
+        <img
+          src={asset('/brand/atit-research-lab.webp')}
+          alt="ATIT Research Lab, Case Western Reserve University"
+          style={{
+            width: 'clamp(84px, 12vw, 112px)',
+            height: 'auto',
+            opacity: 0.92,
+            userSelect: 'none',
+            display: 'block',
+          }}
+        />
+      </a>
 
       {!state.started ? (
         <Onboarding onStart={() => dispatch({ type: 'START' })} />
