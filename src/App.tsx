@@ -291,6 +291,15 @@ export default function App() {
         onTheme={(t) => dispatch({ type: 'SET_THEME', theme: t })}
         onOpenCredits={() => setCreditsOpen(true)}
         onOpenIntro={() => setIntroOpen(true)}
+        onStartOver={
+          state.started
+            ? () => {
+                if (window.confirm("Start over from the beginning? This run's progress will be cleared. Your earned badges are kept.")) {
+                  dispatch({ type: 'RESET_ALL' })
+                }
+              }
+            : undefined
+        }
         onOpenLibrary={state.started && state.libraryDone ? () => openLibrary() : undefined}
         hud={state.started ? <ProgressHud game={game} onOpen={() => setAchievementsOpen(true)} /> : undefined}
         budget={state.started ? <BudgetChip state={state} onOpen={() => setBudgetOpen(true)} /> : undefined}

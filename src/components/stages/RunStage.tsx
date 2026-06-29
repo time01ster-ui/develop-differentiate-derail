@@ -70,7 +70,9 @@ export default function RunStage({
         <Define t="voronoi">Voronoi</Define> territory and measures the{' '}
         <Define t="nearest-neighbor">nearest-neighbor</Define> distance in{' '}
         <Define t="µm">µm</Define>. This is real geometry, computed live. Expect the FN1-rich tissue to be
-        more evenly spread, and the FN1-blocked control more crowded.
+        more evenly spread, and the FN1-blocked control more crowded.{' '}
+        <b style={{ color: 'var(--text)' }}>FN1-blocked is the control:</b> the FN1 road was removed on purpose,
+        so it shows what happens without it.
       </div>
       <div className="col-run">
         <div>

@@ -113,9 +113,9 @@ export default function ToolsStage({ state, dispatch }: { state: LoopState; disp
               const blocker = !st.affordable
                 ? `NEED $${st.req.cost.toLocaleString()}`
                 : st.req.needsOperator && !state.hired.operator
-                ? 'HIRE SAM'
+                ? 'HIRE SUNEETI'
                 : st.req.needsInterpreter && !state.hired.interpreter
-                ? 'HIRE PRIYA'
+                ? 'HIRE QIANNAN'
                 : 'NEEDS MORE'
               const statusChip = st.selected ? 'SELECTED' : st.hardLocked ? 'LOCKED' : st.selectable ? (st.req.cost > 0 ? `$${st.req.cost.toLocaleString()}` : 'FREE') : blocker
               return (

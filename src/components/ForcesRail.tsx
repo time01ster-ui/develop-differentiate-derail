@@ -49,7 +49,7 @@ export default function ForcesRail() {
     <div style={{ position: 'relative', zIndex: 2, borderBottom: '1px solid var(--line)', background: 'color-mix(in srgb, var(--bg2) 50%, transparent)' }}>
       <div style={{ maxWidth: 1180, margin: '0 auto', padding: '6px 22px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 30, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: mono, fontSize: 9.5, letterSpacing: '.14em', color: 'var(--muted)', flex: 'none' }}>FORCES IN PLAY</span>
+          <span style={{ fontFamily: mono, fontSize: 9.5, letterSpacing: '.14em', color: 'var(--muted)', flex: 'none' }}>THREADS IN PLAY</span>
           <span style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
             {FORCES.map((f) => {
               const active = view === f.id

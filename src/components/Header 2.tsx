@@ -11,10 +11,6 @@ interface Props {
   theme: Theme
   onTheme: (t: Theme) => void
   onOpenCredits: () => void
-  /** Opens the Baby Mateo intro video overlay (reachable from any state). */
-  onOpenIntro?: () => void
-  /** Full reset to the onboarding screen (shown only once the loop has started). */
-  onStartOver?: () => void
   onOpenLibrary?: () => void
   /** Optional gamification HUD (rank + research points), shown once started. */
   hud?: ReactNode
@@ -26,7 +22,7 @@ interface Props {
 
 const mono = "'IBM Plex Mono'"
 
-export default function Header({ theme, onTheme, onOpenCredits, onOpenIntro, onStartOver, onOpenLibrary, hud, budget, actLabel = 'Act I, Develop' }: Props) {
+export default function Header({ theme, onTheme, onOpenCredits, onOpenLibrary, hud, budget, actLabel = 'Act I, Develop' }: Props) {
   const { tier, setTier, autoDetected, reducedMotion, setReducedMotion } = useTier()
 
   return (
@@ -177,26 +173,6 @@ export default function Header({ theme, onTheme, onOpenCredits, onOpenIntro, onS
             📚 LIBRARY
           </button>
         )}
-        {onOpenIntro && (
-          <button
-            onClick={onOpenIntro}
-            title="Watch the Baby Mateo intro video"
-            style={{
-              minHeight: 30,
-              padding: '5px 11px',
-              borderRadius: 7,
-              border: '1px solid var(--line)',
-              background: 'transparent',
-              color: 'var(--muted)',
-              cursor: 'pointer',
-              fontFamily: mono,
-              fontSize: 10,
-              letterSpacing: '.06em',
-            }}
-          >
-            ▶ INTRO
-          </button>
-        )}
         <button
           onClick={onOpenCredits}
           style={{
@@ -214,26 +190,6 @@ export default function Header({ theme, onTheme, onOpenCredits, onOpenIntro, onS
         >
           CREDITS
         </button>
-        {onStartOver && (
-          <button
-            onClick={onStartOver}
-            title="Start the whole simulation over from the beginning (keeps your badges)"
-            style={{
-              minHeight: 30,
-              padding: '5px 11px',
-              borderRadius: 7,
-              border: '1px solid var(--line)',
-              background: 'transparent',
-              color: 'var(--muted)',
-              cursor: 'pointer',
-              fontFamily: mono,
-              fontSize: 10,
-              letterSpacing: '.06em',
-            }}
-          >
-            ↺ START OVER
-          </button>
-        )}
       </div>
     </header>
   )

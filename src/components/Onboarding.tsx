@@ -49,6 +49,17 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
               <p style={{ color: 'var(--text)', lineHeight: 1.6, fontSize: 15.5 }}>{ONBOARDING.goal}</p>
             </div>
 
+            {/* What the three act names mean, in plain words, so "Differentiate" and
+                "Derail" are not read in their everyday senses. */}
+            <div style={{ border: '1px solid var(--line)', borderRadius: 12, background: 'var(--panel2)', padding: '12px 14px', marginBottom: 18 }}>
+              <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.12em', color: 'var(--muted)', marginBottom: 8 }}>THE THREE ACTS</div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.6, color: 'var(--text)' }}>
+                <div><b style={{ color: 'var(--accent)' }}>Develop:</b> cells arrive and arrange to build the face.</div>
+                <div><b style={{ color: 'var(--accent)' }}>Differentiate:</b> each cell reads its signals and chooses what to become.</div>
+                <div><b style={{ color: 'var(--accent)' }}>Derail:</b> the same tools, used out of context, can drive cancer.</div>
+              </div>
+            </div>
+
             {/* how it works + safety, as two clear chips */}
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
               <div style={{ flex: 1, minWidth: 220, border: '1px solid var(--line)', borderRadius: 12, background: 'var(--panel2)', padding: '12px 14px' }}>

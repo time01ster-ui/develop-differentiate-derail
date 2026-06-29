@@ -22,6 +22,7 @@ export const GLOSSARY: Record<string, GlossEntry> = {
   'focal adhesion': { term: 'focal adhesion', def: "A cluster of integrins that forms a strong anchor linking the matrix outside to the cell's skeleton inside." },
   actomyosin: { term: 'actomyosin', def: "The cell's muscle-like team of actin filaments and myosin motors that pull and create tension." },
   contractility: { term: 'contractility', def: 'A cell’s ability to pull on itself and its surroundings using its actin and myosin.' },
+  'phospho-mlc': { term: 'phospho-MLC', def: 'A tagged (phosphorylated) form of myosin light chain; it is the on-switch that lets the cell pull, so finding it marks where the cell is actively contracting.' },
   mechanotransduction: { term: 'mechanotransduction', def: 'Turning a physical force, like stiffness or pulling, into a chemical signal the cell’s genes can read.' },
   mechanosensor: { term: 'mechanosensor', def: 'A part that senses physical force and passes the message along, like a tiny force gauge.' },
   tead: { term: 'TEAD', def: 'A DNA-gripping partner that YAP and TAZ team up with in the nucleus to switch target genes on.' },
@@ -37,6 +38,7 @@ export const GLOSSARY: Record<string, GlossEntry> = {
   osteoblast: { term: 'osteoblast', def: 'A bone-building cell.' },
   'intramembranous ossification': { term: 'intramembranous ossification', def: 'Building bone directly from mesenchyme cells, without a cartilage model first; this is how the flat skull bones form.' },
   delamination: { term: 'delamination', def: 'When a cell loosens from a sheet of connected cells and leaves to crawl on its own.' },
+  differentiation: { term: 'differentiation', def: 'When a cell becomes specialized by turning certain genes on and others off, so it takes on one job such as bone, dermis, or cartilage.' },
   // ---- Act III "Derail" terms ----
   lox: {
     term: 'LOX',

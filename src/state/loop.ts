@@ -108,6 +108,7 @@ export type Action =
   | { type: 'PICK_CLAIM'; id: ClaimId }
   | { type: 'CLIMB_LADDER' }
   | { type: 'RESTART' }
+  | { type: 'RESET_ALL' } // full reset to the onboarding screen (keeps theme + earned badges)
 
 /** Highest selected rung level (the claim ceiling), or 0 if none. Reads the
  *  active act's ladder so each act gates claims against its own rungs. */
@@ -245,6 +246,12 @@ export function loopReducer(s: LoopState, a: Action): LoopState {
     case 'RESTART':
       // Replay the CURRENT act with a fresh grant, skipping the library gate.
       return freshAct(s.act, s.theme, true)
+    case 'RESET_ALL':
+      // Back to the very start (onboarding + the intro video), as a first-time
+      // visit would see it. Keeps only the display theme; the persisted loop
+      // mirror is overwritten by this fresh state. Earned badges/XP persist
+      // separately (progress.ts) and are intentionally untouched.
+      return { ...initialState, theme: s.theme }
     default:
       return s
   }
