@@ -3,6 +3,7 @@ import { CLAIMS3, MATEO3, RUNG_NAMES3 } from '../../../content/act3'
 import { fmtP, perEmbryoWelch, type ExperimentData } from '../../../lib/measure'
 import { ceiling, type Action, type LoopState } from '../../../state/loop'
 import { MateoNote, PiBrief } from '../../StageChrome'
+import StatsHelpButton from '../../StatsExplainer'
 
 const mono = "'IBM Plex Mono'"
 
@@ -48,6 +49,9 @@ export default function IterateStage3({ state, dispatch, data }: { state: LoopSt
           that chain in order. <b>Differentiate</b> tuned it to choose a fate. <b>Derail</b> watched a tumor
           hijack it. Order in development, disorder in disease, one toolkit. Not a poem, a mechanism.
         </p>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <StatsHelpButton context="spacing" />
       </div>
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
         <button onClick={() => dispatch({ type: 'CLIMB_LADDER' })} style={{ flex: 1, minWidth: 240, textAlign: 'left', padding: '18px 20px', borderRadius: 13, border: '1.5px solid var(--accent)', background: 'color-mix(in srgb, var(--accent) 10%, transparent)', cursor: 'pointer' }}>

@@ -10,7 +10,7 @@ import { freshAct, loopReducer, type Action, type LoopState } from '../src/state
 import { getAct } from '../src/content/registry.ts'
 import { buildExperiment } from '../src/lib/measure.ts'
 import { emptyReflection, type Reflections } from '../src/lib/reflections.ts'
-import { buildReport, reportToHtml } from '../src/lib/report.ts'
+import { buildExampleReport, buildReport, reportToHtml } from '../src/lib/report.ts'
 import type { ActId } from '../src/content/types.ts'
 
 function apply(s: LoopState, ...actions: Action[]): LoopState {
@@ -120,6 +120,26 @@ test('reportToHtml builds a self-contained document and escapes the student name
   // the injected name must be escaped, never live markup
   assert.ok(!html.includes('<script>alert(1)</script>'), 'student name must be HTML-escaped')
   assert.ok(html.includes('&lt;script&gt;'), 'escaped name present')
+})
+
+test('buildExampleReport produces a complete, supported exemplar (the start-of-run + portal example)', () => {
+  const r = buildExampleReport()
+  assert.equal(r.actLabel, 'Act I · Develop')
+  assert.equal(r.cer.supported, true)
+  assert.ok(!/No claim logged/.test(r.cer.claim))
+  assert.ok(r.measurements.length >= 2)
+  assert.ok(r.sixRs.length >= 1, 'the exemplar shows the 6 Rs corrections')
+  assert.ok(r.badges.length >= 1 && r.xp > 0)
+})
+
+test('Act III report labels the disordered (ctrl) group as the invasive margin', () => {
+  // regression: the derail framing was inverted; treat = normal tissue (ordered),
+  // ctrl = invasive margin (disordered), matching AnalyzeStage3.
+  const s = runToIterate('derail')
+  const r = buildReport(s, {}, [], buildExperiment(s.replicates))
+  const keys = r.measurements.map((m) => m.k).join(' | ')
+  assert.match(keys, /Matched normal tissue/)
+  assert.match(keys, /Invasive margin/)
 })
 
 test('buildReport captures the 6 Rs revisions a student wrote', () => {

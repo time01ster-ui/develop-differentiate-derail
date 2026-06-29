@@ -4,6 +4,7 @@ import { embryoMeans, fmtP, perEmbryoWelch, pooledCellCount, pooledWelch, type E
 import type { LoopState } from '../../../state/loop'
 import Define from '../../Define'
 import { MateoNote, PiBrief } from '../../StageChrome'
+import StatsHelpButton from '../../StatsExplainer'
 import { Kicker } from '../ui'
 
 const mono = "'IBM Plex Mono'"
@@ -46,6 +47,10 @@ export default function AnalyzeStage3({ state, data, onSeeHonestN }: { state: Lo
           <Define t="pseudoreplication">Pseudoreplication</Define> is counting many cells from a few regions as if
           each cell were its own experiment, which fakes a big sample size.
         </div>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <StatsHelpButton context="spacing" />
       </div>
 
       <div className="col-2">

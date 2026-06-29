@@ -13,6 +13,7 @@ import type { LoopState } from '../../state/loop'
 import Define from '../Define'
 import { PiBrief, MateoNote, NotebookNote } from '../StageChrome'
 import { Pseudoreplication } from '../art/SciArt'
+import StatsHelpButton from '../StatsExplainer'
 import { Kicker } from './ui'
 
 const mono = "'IBM Plex Mono'"
@@ -72,6 +73,10 @@ export default function AnalyzeStage({ state, data, onSeeHonestN }: { state: Loo
         <div style={{ border: '1px solid var(--line)', borderRadius: 12, background: 'var(--panel2)', padding: 12 }}>
           <Pseudoreplication height={180} />
         </div>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <StatsHelpButton context="spacing" />
       </div>
 
       <div className="col-2">

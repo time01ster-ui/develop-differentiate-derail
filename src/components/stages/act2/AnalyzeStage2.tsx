@@ -4,6 +4,7 @@ import { bench, benchAgreement, benchReplicates } from '../../../lib/bench'
 import type { LoopState } from '../../../state/loop'
 import Define from '../../Define'
 import { MateoNote, PiBrief } from '../../StageChrome'
+import StatsHelpButton from '../../StatsExplainer'
 import { Kicker } from '../ui'
 
 const mono = "'IBM Plex Mono'"
@@ -33,6 +34,10 @@ export default function AnalyzeStage2({ state, onSeeHonestN }: { state: LoopStat
           your setting pushed the switch (past the middle line means a bone lean). One run is an anecdote;{' '}
           <b>agreement across independent runs</b> is what lets you call a pattern real.
         </div>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <StatsHelpButton context="bench" />
       </div>
 
       {/* the run plot: each replicate's nuclear fraction on a 0..1 axis */}

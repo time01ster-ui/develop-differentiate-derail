@@ -16,6 +16,7 @@ import type { ExperimentData } from '../lib/measure'
 import { buildReport, reportToHtml, type LabReport } from '../lib/report'
 import type { Reflections } from '../lib/reflections'
 import type { LoopState } from '../state/loop'
+import StatsHelpButton from './StatsExplainer'
 
 const mono = "'IBM Plex Mono', ui-monospace, monospace"
 const head = "'Space Grotesk', system-ui, sans-serif"
@@ -67,7 +68,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 /** The printable document. `name` + `date` are export-time additions; nothing here is persisted. */
-function Paper({ report, name, date }: { report: LabReport; name: string; date: string }) {
+export function LabReportPaper({ report, name, date }: { report: LabReport; name: string; date: string }) {
   const r = report
   return (
     <div
@@ -301,6 +302,7 @@ export default function LabReportButton({ state, reflections, badges, data }: { 
                   style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: 'var(--text)', fontSize: 14 }}
                 />
               </label>
+              <StatsHelpButton context={state.act === 'differentiate' ? 'bench' : 'spacing'} compact />
               <button onClick={onPrint} style={btn('var(--c-green)')}>
                 🖨 Print / Save as PDF
               </button>
@@ -312,7 +314,7 @@ export default function LabReportButton({ state, reflections, badges, data }: { 
               </button>
             </div>
 
-            <Paper report={report} name={name} date={date} />
+            <LabReportPaper report={report} name={name} date={date} />
           </div>,
           document.body,
         )}

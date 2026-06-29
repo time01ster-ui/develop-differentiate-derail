@@ -1,15 +1,20 @@
+import { useState } from 'react'
 import { CHARACTERS, ONBOARDING } from '../content/story'
 import { STARTING_BUDGET } from '../content/resources'
 import { EmbryoFace } from './art/SciArt'
 import { CharacterAvatar } from './art/Avatars'
 import { Seal } from './Seal'
 import { asset } from '../lib/asset'
+import LabReportExemplar from './LabReportExemplar'
 
 const mono = "'IBM Plex Mono'"
 
 /** The "Day One" welcome, role, goal, how it works, and that wrong answers are
- *  safe, shown once before Stage 0. Fixes the unanimous "no onboarding" finding. */
+ *  safe, shown once before Stage 0. Fixes the unanimous "no onboarding" finding.
+ *  The student must review the example lab report (the finish line) before the
+ *  begin button unlocks. */
 export default function Onboarding({ onStart }: { onStart: () => void }) {
+  const [reviewedExemplar, setReviewedExemplar] = useState(false)
   return (
     <main style={{ position: 'relative', zIndex: 2, flex: 1, overflowY: 'auto' }}>
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '28px 22px 40px' }}>
@@ -89,11 +94,15 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
 
             <p style={{ fontFamily: mono, fontSize: 12, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 20 }}>{ONBOARDING.loop}</p>
 
+            {/* The finish line: the student must review the example lab report before begin unlocks. */}
+            <LabReportExemplar onReviewed={() => setReviewedExemplar(true)} />
+
             <button
               onClick={onStart}
-              style={{ width: '100%', minHeight: 50, borderRadius: 12, border: 'none', background: 'var(--accent)', color: '#04060c', fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 16, cursor: 'pointer', boxShadow: '0 0 24px color-mix(in srgb, var(--accent) 45%, transparent)' }}
+              disabled={!reviewedExemplar}
+              style={{ width: '100%', minHeight: 50, borderRadius: 12, border: 'none', background: 'var(--accent)', color: '#04060c', fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 16, cursor: reviewedExemplar ? 'pointer' : 'not-allowed', opacity: reviewedExemplar ? 1 : 0.45, boxShadow: reviewedExemplar ? '0 0 24px color-mix(in srgb, var(--accent) 45%, transparent)' : 'none' }}
             >
-              Read up, then begin →
+              {reviewedExemplar ? 'Read up, then begin →' : 'Review the example lab report above to begin'}
             </button>
             <div style={{ textAlign: 'center', marginTop: 10, fontFamily: mono, fontSize: 10.5, color: 'var(--muted)' }}>
               (The display buttons up top, QUALITY, MOTION, LOOK, are safe to ignore. They won’t change the lesson.)

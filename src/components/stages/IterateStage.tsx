@@ -4,6 +4,7 @@ import { MATEO_PAYOFF, ACT1_ITERATE_NOTE } from '../../content/story'
 import { fmtP, perEmbryoWelch, type ExperimentData } from '../../lib/measure'
 import { ceiling, type Action, type LoopState } from '../../state/loop'
 import { MateoNote, PiBrief, NotebookNote } from '../StageChrome'
+import StatsHelpButton from '../StatsExplainer'
 import { ACT_COURSE_SEAL, Seal } from '../Seal'
 
 const mono = "'IBM Plex Mono'"
@@ -53,6 +54,9 @@ export default function IterateStage({
           ))}
         </div>
         <MateoNote>{MATEO_PAYOFF}</MateoNote>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <StatsHelpButton context="spacing" />
       </div>
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
         <button

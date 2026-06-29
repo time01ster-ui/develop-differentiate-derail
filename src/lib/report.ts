@@ -12,10 +12,10 @@ import { getAct } from '../content/registry'
 import { STAGE_LABELS } from '../content/act1'
 import { spent } from '../content/resources'
 import { bench, benchAgreement } from './bench'
-import { embryoMeans, fmtP, mean, perEmbryoWelch, pooledCellCount, type ExperimentData } from './measure'
+import { buildExperiment, embryoMeans, fmtP, mean, perEmbryoWelch, pooledCellCount, type ExperimentData } from './measure'
 import { badgeById, rankOf, xpOf } from './progress'
-import type { Reflections } from './reflections'
-import { ceiling, type LoopState } from '../state/loop'
+import { emptyReflection, type Reflections } from './reflections'
+import { ceiling, freshAct, loopReducer, type Action, type LoopState } from '../state/loop'
 
 export interface ReportRow {
   k: string
@@ -62,7 +62,9 @@ export interface LabReport {
 const ACT_FRAMING: Record<string, { caseLine: string; treat: string; ctrl: string }> = {
   develop: { caseLine: 'Baby Mateo case · neural-crest spacing in the developing frontal bone', treat: 'FN1-rich tissue', ctrl: 'FN1-blocked (control)' },
   differentiate: { caseLine: 'Baby Mateo case · what tips a crest cell toward bone or cartilage (mechanotransduction bench, a model)', treat: 'model setting', ctrl: 'baseline' },
-  derail: { caseLine: 'Sibling-carcinoma invasive margin (a clearly-labeled model, not a patient)', treat: 'Invasive margin', ctrl: 'Matched normal tissue' },
+  // Act III groups: treat = the ordered/regular field = matched normal tissue;
+  // ctrl = the disordered field = the invasive margin (matches AnalyzeStage3).
+  derail: { caseLine: 'Sibling-carcinoma invasive margin (a clearly-labeled model, not a patient)', treat: 'Matched normal tissue', ctrl: 'Invasive margin' },
 }
 
 const ROMAN: Record<number, string> = { 1: 'I', 2: 'II', 3: 'III' }
@@ -197,6 +199,44 @@ export function buildReport(state: LoopState, reflections: Reflections, badgeIds
     rank: rankOf(xp).name,
     xp,
   }
+}
+
+// --- shared example (the exemplar shown at the start + the portal PDF) --------
+// One completed Act I run, driven through the real reducer, so the exemplar a
+// student reviews up front is exactly the artifact they will export at the end.
+
+/** The student name + date shown on the example (clearly an example, not real). */
+export const EXAMPLE_NAME = 'Jordan Rivera (sample student)'
+export const EXAMPLE_DATE = 'Example run, Act I'
+
+export function buildExampleReport(): LabReport {
+  const A = getAct('develop')
+  const free = A.rungs.find((r) => r.lvl === 1)!
+  const acts: Action[] = [
+    { type: 'PICK_Q', id: 'testable' },
+    { type: 'NEXT' },
+    { type: 'PICK_HYP', id: A.hypotheses[0].id },
+    { type: 'NEXT' },
+    { type: 'TOGGLE_RUNG', id: free.id },
+    { type: 'NEXT' },
+    { type: 'TOGGLE_CONTROL' },
+    { type: 'SET_REP', value: 3 },
+    { type: 'SET_DIST', dist: '2d' },
+    { type: 'NEXT' },
+    { type: 'SEGMENT_DONE' },
+    { type: 'MEASURE' },
+    { type: 'NEXT' }, // Analyze
+    { type: 'NEXT' }, // Conclude
+    { type: 'PICK_CLAIM', id: A.claims[0].id },
+    { type: 'NEXT' }, // Iterate
+  ]
+  const s = acts.reduce(loopReducer, freshAct('develop', 'darkfield', true))
+  const reflections: Reflections = {
+    0: { ...emptyReflection(), submitted: true, revised: true, revision: 'I started with "why do babies get clefts," but that is a why I cannot measure. I changed it to whether the crest cells space themselves non-randomly, which I can actually count.', todos: 'Write the testable version of my question first, before I get attached to the big one.' },
+    6: { ...emptyReflection(), submitted: true, revised: true, revision: 'My first instinct was to say FN1 pulls the cells into place. I changed it to "the cells are non-randomly spaced," because I measured spacing, not force.', todos: 'Match the claim to the tool I actually used, and name out loud the thing I did not measure.' },
+  }
+  const badges = ['studied_library', 'testable_question', 'prediction', 'tooled_up', 'fair_design', 'verified_measure', 'honest_ceiling', 'self_corrector', 'loop_closed']
+  return buildReport(s, reflections, badges, buildExperiment(s.replicates))
 }
 
 // --- portable .html export ---------------------------------------------------

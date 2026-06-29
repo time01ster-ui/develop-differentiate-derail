@@ -2,6 +2,9 @@
    Lifted verbatim from the prototype. Theme switch = swap the `data-theme`
    attribute on the app root; everything reads var(--*). */
 
+/* darkfield is also the :root default, so portaled overlays (which render
+   outside the [data-theme] app container) always resolve the theme variables. */
+:root,
 [data-theme='darkfield'] {
   --bg: #04060c;
   --bg2: #0a0f1a;

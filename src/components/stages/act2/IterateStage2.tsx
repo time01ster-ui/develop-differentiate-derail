@@ -4,6 +4,7 @@ import { ACTS } from '../../../content/registry'
 import { bench } from '../../../lib/bench'
 import { ceiling, type Action, type LoopState } from '../../../state/loop'
 import { MateoNote, PiBrief } from '../../StageChrome'
+import StatsHelpButton from '../../StatsExplainer'
 import { ACT_COURSE_SEAL, Seal } from '../../Seal'
 
 const mono = "'IBM Plex Mono'"
@@ -43,6 +44,9 @@ export default function IterateStage2({ state, dispatch }: { state: LoopState; d
           ))}
         </div>
         <MateoNote>{MATEO2.payoff}</MateoNote>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <StatsHelpButton context="bench" />
       </div>
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
         <button
