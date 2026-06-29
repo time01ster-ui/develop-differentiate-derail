@@ -103,8 +103,78 @@ function ThisExperiment({ context }: { context: StatsContext }) {
         Watch the trap: if you counted every single cell as its own data point, n would jump into the hundreds and the
         p-value would look tiny, even from just a few replicates. The computer would trust a result you have not really
         earned. Scientists call that mistake <b>pseudoreplication</b>, and it is exactly why the honest n is per-replicate.
+        Put simply: <b>more cells does not mean more embryos, and only embryos are real repeats.</b>
       </P>
     </>
+  )
+}
+
+// Practice: check-your-understanding items grounded in the sim's own statistics.
+// Each is answerable from the explainer above, the answer is not leaked in the
+// stem, and the reasoning was recomputed. Tiered Intro -> Core -> Challenge.
+const PRACTICE: { tier: string; q: string; a: string }[] = [
+  {
+    tier: 'Intro',
+    q: 'Two classes both average 80 on a quiz. Class A’s scores all land between 78 and 82. Class B’s scores run from 50 to 100. Which class has the larger standard deviation?',
+    a: 'Class B. Standard deviation measures spread, and Class B’s scores are far more scattered, even though the two averages are identical.',
+  },
+  {
+    tier: 'Intro',
+    q: 'A test comes back with p = 0.30. Is that strong evidence of a real difference? Why or why not?',
+    a: 'No. p = 0.30 means that even with no real difference, a gap this big would still turn up about 3 times in 10 just by luck. Luck is an easy explanation here, so the result is not significant.',
+  },
+  {
+    tier: 'Core',
+    q: 'You put two groups’ bell curves side by side and they sit almost exactly on top of each other. What does that tell you about whether the difference is real?',
+    a: 'The gap could easily be luck. Bells that overlap heavily mean the two averages are close compared to the spread, so you cannot claim a real difference (the p-value would be large).',
+  },
+  {
+    tier: 'Core',
+    q: 'You measured 3 embryos, each with about 100 cells. For the honest test, what is n, and why is it not 300?',
+    a: 'n = 3, the number of embryos. The roughly 100 cells inside one embryo are not independent experiments, so counting all 300 would be pseudoreplication and would fake a much smaller p-value than your evidence really supports.',
+  },
+  {
+    tier: 'Core',
+    q: 'Pooling every cell gives p < 0.001, but the honest per-embryo test gives p = 0.20. Which do you trust, and what is it telling you?',
+    a: 'Trust the per-embryo test (p = 0.20). With only 3 real replicates, the difference is not strong enough to claim yet. The tiny pooled p is inflated by pseudoreplication and overstates the evidence.',
+  },
+  {
+    tier: 'Core',
+    q: 'Your honest per-replicate test gives p = 0.002 with tight, consistent data. What can you now say, and what can you still NOT say?',
+    a: 'You can say the difference is statistically significant: a gap this big would almost never happen by luck, so you have real evidence of a difference. You still cannot say the difference is large or important (significant means real, not big), and you cannot claim anything your tools did not measure.',
+  },
+  {
+    tier: 'Challenge',
+    q: 'Your honest test gives p = 0.08, which is not below 0.05. Does that prove the two groups are the same? What is the honest thing to say?',
+    a: 'No. A non-significant result does not prove there is no difference; it means your evidence is not strong enough yet. The honest move is to not claim a difference with this evidence, and maybe add more replicates.',
+  },
+  {
+    tier: 'Challenge',
+    q: 'Two experiments find the same 4-unit gap between their group averages. Experiment A’s data is tightly clustered; Experiment B’s data is widely scattered. Which has the larger t, and which is more likely to be significant?',
+    a: 'Experiment A. With the gap held fixed, tighter data makes the bottom of the t formula smaller, so t is larger and the p-value smaller. A is more likely to be significant.',
+  },
+]
+
+function PracticeItem({ tier, q, a }: { tier: string; q: string; a: string }) {
+  const [show, setShow] = useState(false)
+  const tierColor = tier === 'Intro' ? 'var(--c-green)' : tier === 'Core' ? 'var(--accent)' : 'var(--c-amber)'
+  return (
+    <div style={{ border: '1px solid var(--line)', borderRadius: 10, background: 'var(--panel)', padding: '11px 13px' }}>
+      <div style={{ display: 'flex', gap: 9, alignItems: 'baseline' }}>
+        <span style={{ flex: 'none', fontFamily: mono, fontSize: 9, letterSpacing: '.08em', color: tierColor, border: `1px solid ${tierColor}`, borderRadius: 5, padding: '2px 6px' }}>{tier.toUpperCase()}</span>
+        <span style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--text)' }}>{q}</span>
+      </div>
+      {show ? (
+        <div style={{ marginTop: 9, borderLeft: '2px solid var(--c-green)', padding: '4px 0 4px 12px', fontSize: 13, lineHeight: 1.55, color: 'var(--text)' }}>
+          <span style={{ fontFamily: mono, fontSize: 9.5, letterSpacing: '.1em', color: 'var(--c-green)' }}>ANSWER&nbsp;&nbsp;</span>
+          {a}
+        </div>
+      ) : (
+        <button onClick={() => setShow(true)} style={{ marginTop: 9, padding: '5px 11px', borderRadius: 7, border: '1px dashed color-mix(in srgb, var(--accent) 55%, var(--line))', background: 'color-mix(in srgb, var(--accent) 8%, transparent)', color: 'var(--text)', cursor: 'pointer', fontFamily: mono, fontSize: 11 }}>
+          Show answer ▸
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -148,7 +218,8 @@ export function StatsExplainerModal({ context, onClose }: { context: StatsContex
         <P>
           The <b>standard deviation</b> (SD) is one number for the spread. A small SD means the values hug the mean (a
           tall, narrow bell). A large SD means they scatter (a short, wide bell). The shaded band above is one SD on
-          each side of the mean, where about two-thirds of ordinary values fall.
+          each side of the mean, where about two-thirds of ordinary values fall. (That two-thirds is just a built-in
+          fact about the bell shape; you do not have to derive it, and you do not compute SD by hand here.)
         </P>
 
         <H>3 &middot; Comparing two groups</H>
@@ -176,6 +247,9 @@ export function StatsExplainerModal({ context, onClose }: { context: StatsContex
           in 20. (Careful: that is the chance luck makes the gap, not the chance your result is wrong, and it does not
           mean you are 95% sure.) 0.05 is a shared convention, not a magic line.
         </P>
+        <P>
+          <b>In one line: a small p means the gap would be surprising if it were only luck, so it is probably real.</b>
+        </P>
 
         <H>5 &middot; How it is calculated, in general</H>
         <P>
@@ -191,8 +265,13 @@ export function StatsExplainerModal({ context, onClose }: { context: StatsContex
           t = (difference between the two means) / (how much the averages would jump around just from luck)
         </div>
         <P>
-          <b>t</b> is a difference score: a bigger gap, a tighter spread, or a larger sample all make t bigger, and a
-          bigger t means a smaller p-value.
+          The bottom number is small when your data is steady and large when it is noisy. (If you reran the experiment,
+          the average would not land in the exact same spot every time; the bottom measures that wobble.) Turn the
+          machine once on the quiz: the top is 82 minus 78 = 4. With steady scores the wobble might be about 1, so
+          t = 4 / 1 = 4, comfortably big (small p). With wild scores the wobble might be about 5, so t = 4 / 5 = 0.8, too
+          small to trust (large p). You do not compute this by hand here; the sim does. Just know <b>t</b> is a
+          difference score: a bigger gap, a tighter spread, or a larger sample all make t bigger, and a bigger t means a
+          smaller p-value.
         </P>
 
         <H>6 &middot; In this experiment</H>
@@ -205,6 +284,14 @@ export function StatsExplainerModal({ context, onClose }: { context: StatsContex
             difference; it means your evidence is not strong enough yet. And a tiny p-value never rescues a badly designed
             experiment.
           </P>
+        </div>
+
+        <H>Practice &middot; check your understanding</H>
+        <P>Answer each in your head, then reveal. Every answer follows from the ideas above.</P>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
+          {PRACTICE.map((p) => (
+            <PracticeItem key={p.q} tier={p.tier} q={p.q} a={p.a} />
+          ))}
         </div>
       </div>
     </div>,
