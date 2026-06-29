@@ -11,6 +11,8 @@ interface Props {
   theme: Theme
   onTheme: (t: Theme) => void
   onOpenCredits: () => void
+  /** Opens the Baby Mateo intro video overlay (reachable from any state). */
+  onOpenIntro?: () => void
   onOpenLibrary?: () => void
   /** Optional gamification HUD (rank + research points), shown once started. */
   hud?: ReactNode
@@ -22,7 +24,7 @@ interface Props {
 
 const mono = "'IBM Plex Mono'"
 
-export default function Header({ theme, onTheme, onOpenCredits, onOpenLibrary, hud, budget, actLabel = 'Act I, Develop' }: Props) {
+export default function Header({ theme, onTheme, onOpenCredits, onOpenIntro, onOpenLibrary, hud, budget, actLabel = 'Act I, Develop' }: Props) {
   const { tier, setTier, autoDetected, reducedMotion, setReducedMotion } = useTier()
 
   return (
@@ -171,6 +173,26 @@ export default function Header({ theme, onTheme, onOpenCredits, onOpenLibrary, h
             }}
           >
             📚 LIBRARY
+          </button>
+        )}
+        {onOpenIntro && (
+          <button
+            onClick={onOpenIntro}
+            title="Watch the Baby Mateo intro video"
+            style={{
+              minHeight: 30,
+              padding: '5px 11px',
+              borderRadius: 7,
+              border: '1px solid var(--line)',
+              background: 'transparent',
+              color: 'var(--muted)',
+              cursor: 'pointer',
+              fontFamily: mono,
+              fontSize: 10,
+              letterSpacing: '.06em',
+            }}
+          >
+            ▶ INTRO
           </button>
         )}
         <button

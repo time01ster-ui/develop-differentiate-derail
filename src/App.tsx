@@ -10,6 +10,7 @@ import Header from './components/Header'
 import Stepper from './components/Stepper'
 import Footer from './components/Footer'
 import CreditsPanel from './components/CreditsPanel'
+import IntroModal from './components/IntroModal'
 import Onboarding from './components/Onboarding'
 import Library from './components/Library'
 import ReflectionPanel from './components/ReflectionPanel'
@@ -149,6 +150,7 @@ export default function App() {
   const [state, dispatch] = useReducer(loopReducer, undefined, init)
   const { reducedMotion } = useTier()
   const [creditsOpen, setCreditsOpen] = useState(false)
+  const [introOpen, setIntroOpen] = useState(false)
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [libraryChapter, setLibraryChapter] = useState<string | undefined>(undefined)
   const [openedChapters, setOpenedChapters] = useState<Set<string>>(new Set())
@@ -288,6 +290,7 @@ export default function App() {
         theme={state.theme}
         onTheme={(t) => dispatch({ type: 'SET_THEME', theme: t })}
         onOpenCredits={() => setCreditsOpen(true)}
+        onOpenIntro={() => setIntroOpen(true)}
         onOpenLibrary={state.started && state.libraryDone ? () => openLibrary() : undefined}
         hud={state.started ? <ProgressHud game={game} onOpen={() => setAchievementsOpen(true)} /> : undefined}
         budget={state.started ? <BudgetChip state={state} onOpen={() => setBudgetOpen(true)} /> : undefined}
@@ -399,6 +402,7 @@ export default function App() {
       )}
 
       {creditsOpen && <CreditsPanel onClose={() => setCreditsOpen(false)} />}
+      {introOpen && <IntroModal onClose={() => setIntroOpen(false)} />}
       {achievementsOpen && <AchievementsPanel game={game} onClose={() => setAchievementsOpen(false)} />}
       {budgetOpen && <BudgetPanel state={state} onClose={() => setBudgetOpen(false)} />}
       <XpToast badge={toast} />
