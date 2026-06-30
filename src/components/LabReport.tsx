@@ -17,6 +17,7 @@ import { buildReport, reportToHtml, SCAFFOLD, type LabReport } from '../lib/repo
 import type { Reflections } from '../lib/reflections'
 import type { LoopState } from '../state/loop'
 import StatsHelpButton from './StatsExplainer'
+import { DeepDiveLink } from './SectionDeepDive'
 
 const mono = "'IBM Plex Mono', ui-monospace, monospace"
 const head = "'Space Grotesk', system-ui, sans-serif"
@@ -58,10 +59,13 @@ function Rows({ rows }: { rows: { k: string; v: string }[] }) {
   )
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, guideKey, children }: { title: string; guideKey?: string; children: React.ReactNode }) {
   return (
     <section style={{ marginTop: 22 }}>
-      <Kicker>{title}</Kicker>
+      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', rowGap: 4 }}>
+        <Kicker>{title}</Kicker>
+        {guideKey && <DeepDiveLink sectionKey={guideKey} />}
+      </div>
       {children}
     </section>
   )
@@ -108,7 +112,7 @@ export function LabReportPaper({ report, name, date, scaffold = false }: { repor
         <div style={{ fontSize: 13, color: PAPER.muted }}>Date: {date}</div>
       </div>
 
-      <Section title="Abstract">
+      <Section title="Abstract" guideKey={scaffold ? 'abstract' : undefined}>
         {scaffold ? (
           <>
             <p style={{ fontSize: 11.5, color: PAPER.muted, marginBottom: 10, lineHeight: 1.5 }}>{SCAFFOLD.abstractIntro}</p>
@@ -133,11 +137,11 @@ export function LabReportPaper({ report, name, date, scaffold = false }: { repor
         )}
       </Section>
 
-      <Section title="01 · Question (Ask)">
+      <Section title="01 · Question (Ask)" guideKey={scaffold ? 'question' : undefined}>
         <p style={{ fontSize: 14, color: PAPER.ink }}>{r.question}</p>
       </Section>
 
-      <Section title="02 · Hypothesis & prediction (Hypothesize)">
+      <Section title="02 · Hypothesis & prediction (Hypothesize)" guideKey={scaffold ? 'hypothesis' : undefined}>
         <p style={{ fontSize: 14 }}>{r.hypothesis}</p>
         {r.prediction && (
           <p style={{ fontSize: 13, color: PAPER.muted, marginTop: 4 }}>
@@ -158,15 +162,15 @@ export function LabReportPaper({ report, name, date, scaffold = false }: { repor
         />
       </Section>
 
-      <Section title="04 · Design">
+      <Section title="04 · Design" guideKey={scaffold ? 'design' : undefined}>
         <Rows rows={r.design} />
       </Section>
 
-      <Section title="05 · Measurements (Run)">
+      <Section title="05 · Measurements (Run)" guideKey={scaffold ? 'measurements' : undefined}>
         <Rows rows={r.measurements} />
       </Section>
 
-      <Section title="06 · Analysis (Analyze)">
+      <Section title="06 · Analysis (Analyze)" guideKey={scaffold ? 'analysis' : undefined}>
         <p style={{ fontSize: 13.5 }}>{r.analyze}</p>
       </Section>
 
@@ -178,12 +182,12 @@ export function LabReportPaper({ report, name, date, scaffold = false }: { repor
             {r.cer.supported ? 'SUPPORTED' : 'NOT SUPPORTED'}
           </span>
         </div>
-        <CerRow label="CLAIM" body={r.cer.claim} />
-        <CerRow label="EVIDENCE" body={r.cer.evidence} />
+        <CerRow label="CLAIM" body={r.cer.claim} guideKey={scaffold ? 'claim' : undefined} />
+        <CerRow label="EVIDENCE" body={r.cer.evidence} guideKey={scaffold ? 'evidence' : undefined} />
         {scaffold ? (
           <>
-            <CerPrompt label="REASONING" prompt={SCAFFOLD.reasoning} />
-            <CerPrompt label="LIMITATION" prompt={SCAFFOLD.limitation} accent={PAPER.gold} />
+            <CerPrompt label="REASONING" prompt={SCAFFOLD.reasoning} guideKey="reasoning" />
+            <CerPrompt label="LIMITATION" prompt={SCAFFOLD.limitation} accent={PAPER.gold} guideKey="limitation" />
           </>
         ) : (
           <>
@@ -236,11 +240,12 @@ export function LabReportPaper({ report, name, date, scaffold = false }: { repor
   )
 }
 
-function CerRow({ label, body, accent = PAPER.green }: { label: string; body: string; accent?: string }) {
+function CerRow({ label, body, accent = PAPER.green, guideKey }: { label: string; body: string; accent?: string; guideKey?: string }) {
   return (
     <div style={{ marginBottom: 9 }}>
       <span style={{ fontFamily: mono, fontSize: 9.5, fontWeight: 700, letterSpacing: '.12em', color: accent }}>{label}&nbsp;&nbsp;</span>
       <span style={{ fontSize: 13.5, color: PAPER.ink }}>{body}</span>
+      {guideKey && <DeepDiveLink sectionKey={guideKey} />}
     </div>
   )
 }
@@ -262,11 +267,12 @@ function WriteBox() {
 }
 
 /** A CER row the student must compose: the label, a prompt with a sentence frame, and space to write. */
-function CerPrompt({ label, prompt, accent = PAPER.green }: { label: string; prompt: string; accent?: string }) {
+function CerPrompt({ label, prompt, accent = PAPER.green, guideKey }: { label: string; prompt: string; accent?: string; guideKey?: string }) {
   return (
     <div style={{ marginBottom: 9 }}>
       <span style={{ fontFamily: mono, fontSize: 9.5, fontWeight: 700, letterSpacing: '.12em', color: accent }}>{label}&nbsp;&nbsp;</span>
       <span style={{ fontSize: 12.5, color: PAPER.muted }}>{prompt}</span>
+      {guideKey && <DeepDiveLink sectionKey={guideKey} />}
       <WriteBox />
     </div>
   )
@@ -369,14 +375,17 @@ export default function LabReportButton({ state, reflections, badges, data, onOp
               </label>
               <StatsHelpButton context={state.act === 'differentiate' ? 'bench' : 'spacing'} compact />
               <button onClick={onPrint} style={btn('var(--c-green)')}>
-                🖨 Print / Save as PDF
+                🖨 Print blank form
               </button>
               <button onClick={onDownload} style={btn('var(--accent)')}>
-                ⬇ Download (.html)
+                ⬇ Download blank form
               </button>
               <button onClick={() => setOpen(false)} style={btn('var(--line)', true)}>
                 Close
               </button>
+            </div>
+            <div className="ddd-report-noprint" style={{ maxWidth: 820, margin: '0 auto 14px', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.5 }}>
+              On screen, every section has a <b style={{ color: 'var(--text)' }}>How to write this</b> link with a step-by-step guide and tutorials. Download or print the blank form to compose your answers in the spaces provided.
             </div>
 
             <LabReportPaper report={report} name={name} date={date} scaffold />
