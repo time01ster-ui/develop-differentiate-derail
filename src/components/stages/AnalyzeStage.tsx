@@ -112,7 +112,9 @@ export default function AnalyzeStage({ state, data, onSeeHonestN }: { state: Loo
           </div>
           <div style={{ fontFamily: "'Space Grotesk'", fontWeight: 600, fontSize: 17, marginBottom: 4 }}>Per-embryo, the real n</div>
           <div style={{ fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.5, marginBottom: 14 }}>
-            One mean spacing per embryo. {state.replicates} embryos per group. This is the test a
+            One mean spacing per embryo. {state.replicates} embryos per group: each embryo is one{' '}
+            <Define t="replicate">replicate</Define>, one independent <Define t="trial">trial</Define>, so the real{' '}
+            <Define t="sample size">n</Define> is the number of embryos, not the number of cells. This is the test a
             reviewer trusts.
           </div>
           <div style={{ position: 'relative', height: 96, borderRadius: 9, background: 'var(--bg2)', marginBottom: 14, border: '1px solid var(--line)' }}>
