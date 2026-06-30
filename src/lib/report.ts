@@ -40,6 +40,7 @@ export interface ReportSixRs {
 export interface LabReport {
   actLabel: string // "Act I · Develop"
   caseLine: string // the one-line case framing for this act
+  abstract: string // a model abstract drafted from the run (written last; answers the 5 questions)
   question: string
   hypothesis: string
   prediction: string
@@ -76,7 +77,7 @@ function honestyLabel(s: LoopState): string {
 }
 
 /** Measurements + the pseudoreplication / agreement read, both drawn per act. */
-function measureSections(s: LoopState, data: ExperimentData | undefined, treat: string, ctrl: string): { measurements: ReportRow[]; analyze: string; evidence: string } {
+function measureSections(s: LoopState, data: ExperimentData | undefined, treat: string, ctrl: string): { measurements: ReportRow[]; analyze: string; evidence: string; finding: string } {
   // Act II: the mechanotransduction bench (a model the student sets by hand).
   if (s.act === 'differentiate') {
     const r = bench(s.stiffness, s.shape)
@@ -89,12 +90,13 @@ function measureSections(s: LoopState, data: ExperimentData | undefined, treat: 
     ]
     const analyze = `Across ${s.replicates} model runs, ${Math.round(agree * 100)}% agreed with the ${r.fate} lean. Agreement across runs, not one dramatic reading, is what makes a model lean trustworthy. This is a model you set, not a stiffness measured in Mateo.`
     const evidence = `Model bench: nuclear YAP/TAZ ${Math.round(r.nuclear * 100)}% at stiffness ${Math.round(s.stiffness * 100)}% / spread ${Math.round(s.shape * 100)}%, leaning ${r.fate} (${Math.round(r.confidence * 100)}% decisive), with ${Math.round(agree * 100)}% agreement across ${s.replicates} runs.`
-    return { measurements, analyze, evidence }
+    const finding = `the model leaned ${r.fate} (${Math.round(r.confidence * 100)}% decisive), and ${Math.round(agree * 100)}% of the ${s.replicates} runs agreed`
+    return { measurements, analyze, evidence, finding }
   }
 
   // Acts I + III: the real Voronoi nearest-neighbor spacing engine on two groups.
   if (!data) {
-    return { measurements: [{ k: 'Measurements', v: 'not recorded' }], analyze: '', evidence: 'spatial spacing comparison (no data captured)' }
+    return { measurements: [{ k: 'Measurements', v: 'not recorded' }], analyze: '', evidence: 'spatial spacing comparison (no data captured)', finding: 'no measurement was captured' }
   }
   const emb = perEmbryoWelch(data)
   const treatMean = mean(embryoMeans(data.treat))
@@ -114,7 +116,8 @@ function measureSections(s: LoopState, data: ExperimentData | undefined, treat: 
   // confusing when both display the same value.
   const analyze = `Only the ${data.reps} replicates count as the real sample (n=${data.reps}), and the honest per-replicate test already finds a clear difference (p ${fmtP(emb.p)}). Pooling treats all ${cells} cells across those replicates as if each were its own experiment, inflating the sample far past ${data.reps}. That inflation is what makes a pooled result look more certain than the evidence supports, which is pseudoreplication, so the per-replicate test is the one to trust. Spacing here is a relative nearest-neighbor index in normalized image units; a larger number means cells sit farther apart.`
   const evidence = `Nearest-neighbor spacing (relative, normalized units; larger = farther apart), ${treat} vs ${ctrl}, measured per replicate (n=${data.reps}). Honest test p ${fmtP(emb.p)}; mean ${treatMean.toFixed(4)} vs ${ctrlMean.toFixed(4)}.`
-  return { measurements, analyze, evidence }
+  const finding = `the ${treat} was ${treatMean > ctrlMean ? 'more spread out' : 'more crowded'} than the ${ctrl} (mean relative spacing ${treatMean.toFixed(4)} versus ${ctrlMean.toFixed(4)}; honest per-replicate test p ${fmtP(emb.p)}, n=${data.reps})`
+  return { measurements, analyze, evidence, finding }
 }
 
 /**
@@ -161,7 +164,7 @@ export function buildReport(state: LoopState, reflections: Reflections, badgeIds
     { k: 'Honesty label', v: honestyLabel(state) },
   ]
 
-  const { measurements, analyze, evidence } = measureSections(state, data, frame.treat, frame.ctrl)
+  const { measurements, analyze, evidence, finding } = measureSections(state, data, frame.treat, frame.ctrl)
 
   // A claim is supported iff it sits at or below the evidence ceiling. This is
   // the reducer's own rule (claimResult = ok ? 'valid' : 'blocked', ok = req <=
@@ -185,6 +188,28 @@ export function buildReport(state: LoopState, reflections: Reflections, badgeIds
     limitation: `${A.pinnedQuote} ${A.ceilingAside}`,
   }
 
+  // A model abstract drafted from the run as connected prose (the student refines
+  // it). Scientists write the abstract LAST because it summarizes the whole report;
+  // it answers what / why / how / found / means, names the control once, and ties
+  // the conclusion to its evidence.
+  const claimClean = (claim ? claim.text : 'no claim was logged').replace(/\.$/, '')
+  const claimLc = claimClean.charAt(0).toLowerCase() + claimClean.slice(1)
+  const motivation =
+    state.act === 'develop'
+      ? 'Where these cells settle helps build the frontal bone, so whether they arrange themselves on purpose is worth testing.'
+      : state.act === 'derail'
+        ? 'How ordered the cells are at a tumor margin is a clue to how the tissue invades, so it is worth measuring.'
+        : 'What tips a cell toward bone or cartilage is a clue to how the skeleton forms, so it is worth modeling.'
+  const methodSentence =
+    state.act === 'differentiate'
+      ? `To test this, we set a mechanotransduction bench and read the bone-versus-cartilage lean across ${state.replicates} model runs, comparing against a soft, round-cell baseline.`
+      : `To test this, we measured the nearest-neighbor spacing of cell nuclei in ${frame.treat}, comparing it against ${frame.ctrl}${state.act === 'develop' && state.controlChoices.includes('pos') ? ' and a known-ordered positive control' : ''}, across ${state.replicates} ${repWord}.`
+  const limitBridge =
+    state.act === 'develop'
+      ? 'We measured spacing, not force, so this shows the cells are organized, not that anything is pulling them: spatial organization is not the same thing as tension.'
+      : `One limit: ${A.pinnedQuote}`
+  const abstract = `${q ? q.text : 'We set out to test a question.'} ${motivation} ${methodSentence} We found that ${finding}. We conclude that ${claimLc}, because the difference from the control is ${supported ? 'unlikely to be due to chance' : 'not yet strong enough to claim'}. ${limitBridge}`
+
   const sixRs: ReportSixRs[] = STAGE_LABELS.map((stage, i) => ({
     stage,
     revised: (reflections[i]?.revision ?? '').trim(),
@@ -200,6 +225,7 @@ export function buildReport(state: LoopState, reflections: Reflections, badgeIds
   return {
     actLabel: `Act ${ROMAN[A.index] ?? 'I'} · ${A.shortTitle}`,
     caseLine: frame.caseLine,
+    abstract,
     question: q ? q.text : 'No question selected.',
     hypothesis: hyp ? hyp.text : 'No hypothesis selected.',
     prediction: hyp ? hyp.prediction : '',
@@ -317,6 +343,7 @@ export function reportToHtml(r: LabReport, name: string, date: string): string {
     <div class="rank"><div class="eyebrow">RANK</div><div class="n">${esc(r.rank)}</div><div class="muted">${r.xp} research points</div></div>
   </div>
   <div class="who"><div>Student: <b>${esc(name || ' ')}</b></div><div class="muted">Date: ${esc(date)}</div></div>
+  <section><div class="kick">Abstract</div><p style="font-size:11px;color:#5c6b60;margin-bottom:6px">Write this LAST: an abstract is a short summary of the whole report (about 150 to 300 words) that answers what you did, why, how, what you found, and what it means. The draft below is built from your run; refine it in your own words.</p><p>${esc(r.abstract)}</p></section>
   <section><div class="kick">01 · Question (Ask)</div><p>${esc(r.question)}</p></section>
   <section><div class="kick">02 · Hypothesis &amp; prediction</div><p>${esc(r.hypothesis)}</p>${r.prediction ? `<p class="muted" style="margin-top:4px;font-size:13px"><span class="tag g">PREDICTION</span>${esc(r.prediction)}</p>` : ''}</section>
   <section><div class="kick">03 · Tools &amp; budget</div>${rowsHtml([{ k: 'Tools selected', v: r.tools.join(' · ') }, { k: 'Evidence ceiling', v: r.ceilingName }, { k: 'Team hired', v: r.hires.length ? r.hires.join(' · ') : 'none' }, { k: 'Grant spent', v: `$${r.budgetSpent.toLocaleString()} of $${r.budgetTotal.toLocaleString()}` }])}</section>

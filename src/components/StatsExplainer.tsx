@@ -153,6 +153,16 @@ const PRACTICE: { tier: string; q: string; a: string }[] = [
     q: 'Two experiments find the same 4-unit gap between their group averages. Experiment A’s data is tightly clustered; Experiment B’s data is widely scattered. Which has the larger t, and which is more likely to be significant?',
     a: 'Experiment A. With the gap held fixed, tighter data makes the bottom of the t formula smaller, so t is larger and the p-value smaller. A is more likely to be significant.',
   },
+  {
+    tier: 'Core',
+    q: 'A poll says Candidate A leads 52% to 48% with a margin of error of plus or minus 3 points. Is A definitely ahead?',
+    a: 'No. The margin of error (±3) is almost as big as the 4-point lead, so the true gap could be tiny or even reversed. The lead is within the noise, so you cannot call it a real lead yet.',
+  },
+  {
+    tier: 'Intro',
+    q: 'An ad says "9 out of 10 dentists recommend it." What is the single most important question to ask before believing it?',
+    a: 'How many dentists were asked? "9 out of 10" could mean they asked only 10. A tiny sample makes the number meaningless; sample size is what gives it weight.',
+  },
 ]
 
 function PracticeItem({ tier, q, a }: { tier: string; q: string; a: string }) {
@@ -276,6 +286,23 @@ export function StatsExplainerModal({ context, onClose }: { context: StatsContex
 
         <H>6 &middot; In this experiment</H>
         <ThisExperiment context={context} />
+
+        <H>7 &middot; Where you will see this (in any class, and in the news)</H>
+        <P>The same four ideas, spread, comparison, sample size, and the p-value, let you read claims almost anywhere. A few places they show up:</P>
+        <ul style={{ margin: '0 0 8px', paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <li style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--text)' }}><b>Elections and polls:</b> "Candidate A leads 52 to 48, margin of error plus or minus 3 points." The margin of error is the spread; this close, the lead could be luck. And the poll sampled about a thousand people, not one.</li>
+          <li style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--text)' }}><b>Medicine:</b> "the vaccine significantly cut infections (p &lt; 0.001)" means the drop is probably real, not luck. It does not mean it worked for every single person. Ask the sample size and whether there was a placebo control (a fake treatment to compare against).</li>
+          <li style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--text)' }}><b>Sports:</b> hitting .400 over 10 games (a small sample, maybe a hot streak) is weaker evidence than .300 over a full season (a large sample).</li>
+          <li style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--text)' }}><b>A/B tests and reviews:</b> when a website shows two versions to see which people prefer, "version B got more clicks" only counts if enough people saw it and the gap beats chance.</li>
+          <li style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--text)' }}><b>Other science classes:</b> error bars on a graph show uncertainty, sometimes the spread of the data and sometimes how precise the average is, so check the caption for which. If two bars overlap a lot, the difference may not be real, the same idea as overlapping bell curves.</li>
+          <li style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--text)' }}><b>Everyday ads:</b> "9 out of 10 dentists" means little until you ask how many dentists were asked.</li>
+        </ul>
+        <div style={{ border: '1px solid color-mix(in srgb, var(--accent) 35%, var(--line))', borderRadius: 10, background: 'color-mix(in srgb, var(--accent) 6%, var(--panel))', padding: '11px 13px', marginBottom: 6 }}>
+          <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.12em', color: 'var(--accent)', marginBottom: 6 }}>HOW TO READ ANY STATISTICS CLAIM</div>
+          <p style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--text)' }}>
+            When you meet a number or a "significant" claim, ask: (1) what exactly is measured, and in what units? (2) compared against what (a control)? (3) how big is the sample (how many independent trials)? (4) how spread out is the data (error bars or margin of error)? (5) is the difference likely real, or could it be luck (the p-value)? (6) does the conclusion only claim what was actually measured, or does it reach further?
+          </p>
+        </div>
 
         <div style={{ borderLeft: '2px solid var(--c-green)', padding: '6px 0 6px 14px', marginTop: 14, background: 'color-mix(in srgb, var(--c-green) 5%, transparent)' }}>
           <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.12em', color: 'var(--c-green)', marginBottom: 4 }}>THE HONEST PART</div>

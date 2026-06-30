@@ -108,6 +108,15 @@ export function LabReportPaper({ report, name, date }: { report: LabReport; name
         <div style={{ fontSize: 13, color: PAPER.muted }}>Date: {date}</div>
       </div>
 
+      <Section title="Abstract">
+        <p style={{ fontSize: 11.5, color: PAPER.muted, marginBottom: 6, lineHeight: 1.5 }}>
+          Write this last. An abstract is a short summary of the whole report (about 150 to 300 words) that answers what
+          you did, why, how, what you found, and what it means. The draft below is built from your run; refine it in your
+          own words.
+        </p>
+        <p style={{ fontSize: 13.5, color: PAPER.ink, lineHeight: 1.55 }}>{r.abstract}</p>
+      </Section>
+
       <Section title="01 · Question (Ask)">
         <p style={{ fontSize: 14, color: PAPER.ink }}>{r.question}</p>
       </Section>

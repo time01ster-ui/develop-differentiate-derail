@@ -142,6 +142,17 @@ test('Act III report labels the disordered (ctrl) group as the invasive margin',
   assert.match(keys, /Invasive margin/)
 })
 
+test('buildReport drafts a model abstract that summarizes the run', () => {
+  const s = runToIterate('develop')
+  const r = buildReport(s, {}, [], buildExperiment(s.replicates))
+  assert.ok(r.abstract.split(/\s+/).length > 90, 'abstract is a real paragraph')
+  assert.match(r.abstract, /To test this, we measured/)
+  assert.match(r.abstract, /We conclude that .*because the difference from the control/, 'conclusion is tied to its evidence')
+  assert.match(r.abstract, /spatial organization is not the same thing as tension/, 'names the limit')
+  // the control setup is described once (no "using ... as the control" + "Control:" repetition)
+  assert.ok(!/using the FN1-blocked tissue as the control/.test(r.abstract), 'no redundant control restatement')
+})
+
 test('control gate: only the negative control satisfies it, distractors do not', () => {
   let s = freshAct('develop', 'darkfield', true)
   s = loopReducer(s, { type: 'TOGGLE_CONTROL_CHOICE', id: 'same' }) // a distractor

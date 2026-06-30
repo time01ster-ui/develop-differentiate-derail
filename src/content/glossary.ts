@@ -129,6 +129,26 @@ export const GLOSSARY: Record<string, GlossEntry> = {
     term: 'run',
     def: 'One time you carry the experiment all the way through. On the model bench (Differentiate), each model run is one replicate, one independent trial at a setting. The "Run / Measure" step is the stage where you carry out the experiment and take a reading; "your run" on the final screen means your whole trip through the loop.',
   },
+  abstract: {
+    term: 'abstract',
+    def: 'A short summary of the whole report (about 150 to 300 words) that answers what you did, why, how, what you found, and what it means. Scientists write it last, because it summarizes everything else.',
+  },
+  imrad: {
+    term: 'IMRaD',
+    def: 'The standard shape of a science paper: Introduction, Methods, Results, and Discussion.',
+  },
+  conclusion: {
+    term: 'conclusion',
+    def: 'The part where you say what your results mean, not just what they were: you interpret the data, state what you can claim and how sure you are, and name what you still cannot say.',
+  },
+  revision: {
+    term: 'revision',
+    def: 'Going back to improve a draft: cutting extra words, fixing unclear sentences, and checking that every claim is backed by evidence.',
+  },
+  concision: {
+    term: 'concision',
+    def: 'Saying it in as few words as the meaning needs, so the reader is not slowed down.',
+  },
   'neural crest cells': {
     term: 'neural crest cells',
     def: 'Special cells that travel through the early embryo and build parts of the face and skull.',
