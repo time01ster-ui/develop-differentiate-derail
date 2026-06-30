@@ -21,8 +21,27 @@ function keyFor(id: string) {
   return `ddd_guided_${id}`
 }
 
+// In-session copy of every chapter's notes. Completion must NOT depend on
+// localStorage actually persisting: some managed devices, private windows, or
+// storage-blocking settings silently drop it, which would leave a student who
+// filled everything stuck at 0/2 forever. We always keep the notes here for the
+// life of the page (so submit works), and still write localStorage as a bonus for
+// surviving reloads when it is available.
+const memStore: Record<string, NotesData> = {}
+export function rememberNotes(id: string, data: NotesData) {
+  memStore[id] = data
+}
+
 export function loadNotes(ch: LibraryChapter): NotesData {
   const empty: NotesData = { sections: ch.sections.map(() => ''), vocab: '', summary: '' }
+  const mem = memStore[ch.id]
+  if (mem) {
+    return {
+      sections: ch.sections.map((_, i) => mem.sections[i] ?? ''),
+      vocab: mem.vocab ?? '',
+      summary: mem.summary ?? '',
+    }
+  }
   if (typeof window === 'undefined') return empty
   try {
     const raw = window.localStorage.getItem(keyFor(ch.id))
@@ -72,10 +91,11 @@ export default function GuidedNotes({ ch, onClose }: { ch: LibraryChapter; onClo
     setData(loadNotes(ch))
   }, [ch.id])
   useEffect(() => {
+    rememberNotes(ch.id, data) // always works, even when localStorage is blocked
     try {
       window.localStorage.setItem(keyFor(ch.id), JSON.stringify(data))
     } catch {
-      /* storage may be blocked on managed devices; the in-session text still holds */
+      /* storage may be blocked on managed devices; the in-session copy still counts */
     }
   }, [ch.id, data])
 
