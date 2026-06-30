@@ -161,6 +161,7 @@ export default function App() {
   const [achievementsOpen, setAchievementsOpen] = useState(false)
   const [budgetOpen, setBudgetOpen] = useState(false)
   const [glossaryOpen, setGlossaryOpen] = useState(false)
+  const [reportOpen, setReportOpen] = useState(false)
   const [toast, setToast] = useState<Badge | null>(null)
   const [sawHonestN, setSawHonestN] = useState(false)
   const mainRef = useRef<HTMLElement>(null)
@@ -233,6 +234,9 @@ export default function App() {
   const canNext = canAdvance(state)
   const { footerHint, nextLabel } = footerFor(state, canNext)
   const A = getAct(state.act)
+  // Any full-screen overlay that brings its own controls (the Library has its own
+  // dock). Hide the loop dock while one is open so the two never stack up.
+  const overlayOpen = creditsOpen || introOpen || achievementsOpen || budgetOpen || glossaryOpen || libraryOpen || reportOpen
 
   // The act-specific stage view. Act I "Develop" uses its original components;
   // each later act supplies its own divergent stages (the bench, etc.).
@@ -391,7 +395,7 @@ export default function App() {
               {state.step === 4 && <ProcessExplainer act={state.act} />}
               {renderStage()}
 
-              {state.step === 7 && <LabReportButton state={state} reflections={reflections} badges={game.badges} data={data} />}
+              {state.step === 7 && <LabReportButton state={state} reflections={reflections} badges={game.badges} data={data} onOpenChange={setReportOpen} />}
 
               <ReflectionPanel
                 step={state.step}
@@ -415,23 +419,26 @@ export default function App() {
 
           {/* Floating dock on every loop stage: Home (the study Library, where the
               per-chapter Guided notes + Submit live) and a Glossary you can open to
-              look up any term without leaving the investigation. */}
-          <div style={{ position: 'fixed', right: 16, bottom: 88, zIndex: 26, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {[
-              { icon: '🏠', label: 'Home', on: () => openLibrary() },
-              { icon: '📖', label: 'Glossary', on: () => setGlossaryOpen(true) },
-            ].map((b) => (
-              <button
-                key={b.label}
-                onClick={b.on}
-                title={b.label}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 40, padding: '8px 14px', borderRadius: 22, border: '1px solid color-mix(in srgb, var(--accent) 45%, var(--line))', background: 'color-mix(in srgb, var(--accent) 16%, var(--panel))', color: 'var(--text)', cursor: 'pointer', boxShadow: '0 6px 20px rgba(0,0,0,.4)', fontFamily: "'IBM Plex Mono'", fontSize: 12 }}
-              >
-                <span aria-hidden style={{ fontSize: 15 }}>{b.icon}</span>
-                {b.label}
-              </button>
-            ))}
-          </div>
+              look up any term without leaving the investigation. Hidden while an
+              overlay is open (the Library brings its own dock) so they never stack. */}
+          {!overlayOpen && (
+            <div style={{ position: 'fixed', right: 16, bottom: 88, zIndex: 26, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                { icon: '🏠', label: 'Home', on: () => openLibrary() },
+                { icon: '📖', label: 'Glossary', on: () => setGlossaryOpen(true) },
+              ].map((b) => (
+                <button
+                  key={b.label}
+                  onClick={b.on}
+                  title={b.label}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 40, padding: '8px 14px', borderRadius: 22, border: '1px solid color-mix(in srgb, var(--accent) 45%, var(--line))', background: 'color-mix(in srgb, var(--accent) 16%, var(--panel))', color: 'var(--text)', cursor: 'pointer', boxShadow: '0 6px 20px rgba(0,0,0,.4)', fontFamily: "'IBM Plex Mono'", fontSize: 12 }}
+                >
+                  <span aria-hidden style={{ fontSize: 15 }}>{b.icon}</span>
+                  {b.label}
+                </button>
+              ))}
+            </div>
+          )}
         </>
       )}
 

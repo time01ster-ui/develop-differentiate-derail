@@ -241,8 +241,12 @@ function slug(s: string): string {
 }
 
 /** The button students see on the Iterate stage, plus its export overlay. */
-export default function LabReportButton({ state, reflections, badges, data }: { state: LoopState; reflections: Reflections; badges: string[]; data?: ExperimentData }) {
-  const [open, setOpen] = useState(false)
+export default function LabReportButton({ state, reflections, badges, data, onOpenChange }: { state: LoopState; reflections: Reflections; badges: string[]; data?: ExperimentData; onOpenChange?: (open: boolean) => void }) {
+  const [open, setOpenRaw] = useState(false)
+  const setOpen = (v: boolean) => {
+    setOpenRaw(v)
+    onOpenChange?.(v)
+  }
   const [name, setName] = useState('')
   const report = buildReport(state, reflections, badges, data)
   const date = todayLabel()

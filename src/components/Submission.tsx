@@ -13,11 +13,12 @@ import { loadNotes, notesComplete } from './GuidedNotes'
 const mono = "'IBM Plex Mono'"
 const head = "'Space Grotesk'"
 
-// The class drop folder the student uploads their hand-in to. Paste the share
-// link to the CMSD OneDrive "drop / file request" folder here once it is created
-// (district account, "people in CMSD with the link can upload"). Left blank, the
-// page simply tells students to turn it in the way the teacher asks.
-const DROP_FOLDER_URL = ''
+// The class drop folder the student uploads their hand-in to: the CMSD OneDrive
+// "Biomed Submissions / Inbox" folder. This link ships in the public bundle, so the
+// share MUST be scoped to "People in CMSD with the link can upload" (district login
+// required), never "Anyone with the link". Left blank, the page just tells students
+// to turn it in the way the teacher asks.
+const DROP_FOLDER_URL = 'https://clemetroschools-my.sharepoint.com/:f:/g/personal/manuel_mendoza_clevelandmetroschools_org/IgAf1ESs65YtTrYcgZv8FgjJAZbFclhpQefNvNu4Mu3Ox8E?e=PJQCAD'
 
 const field: React.CSSProperties = {
   background: 'var(--panel)',
