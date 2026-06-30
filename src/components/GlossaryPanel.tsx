@@ -9,6 +9,19 @@ import { GLOSSARY } from '../content/glossary'
 const mono = "'IBM Plex Mono'"
 const head = "'Space Grotesk'"
 
+// The portal hosts a labeled illustration per term at /glossary/<slug>.webp (same
+// domain as the embedded sim). Slug matches the portal's: lowercase, non-alphanumeric
+// runs become "-". Terms without an illustration fall back to text via onError.
+// A few core lab terms the portal illustrates under a different name are aliased so
+// they still get a picture inline.
+const IMG_ALIAS: Record<string, string> = {
+  'extracellular matrix': 'ecm',
+  replicates: 'replicate',
+  'sample size (n)': 'sample-size',
+  blind: 'blinding',
+}
+const imgSlug = (term: string) => IMG_ALIAS[term.toLowerCase()] ?? term.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+
 export default function GlossaryPanel({ onClose }: { onClose: () => void }) {
   const [q, setQ] = useState('')
   // distinct by display term, alphabetized (the glossary has key aliases that
@@ -51,15 +64,37 @@ export default function GlossaryPanel({ onClose }: { onClose: () => void }) {
             placeholder={`Search ${all.length} terms...`}
             style={{ width: '100%', background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: 10, padding: '10px 12px', color: 'var(--text)', fontSize: 14, outline: 'none' }}
           />
+          <a
+            href="/learn/glossary"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, padding: '8px 12px', borderRadius: 9, border: '1px solid color-mix(in srgb, var(--accent) 45%, var(--line))', background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--text)', textDecoration: 'none', fontSize: 12.5 }}
+          >
+            <span aria-hidden style={{ fontSize: 15 }}>🖼</span>
+            <span>Open the full illustrated glossary, every term with a labeled picture <span style={{ color: 'var(--accent)' }}>→</span></span>
+          </a>
         </div>
         <div style={{ overflowY: 'auto', padding: '0 18px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
           {shown.length === 0 ? (
             <div style={{ fontSize: 13, color: 'var(--muted)', padding: '8px 2px' }}>No term matches "{q}".</div>
           ) : (
             shown.map((e) => (
-              <div key={e.term} style={{ border: '1px solid var(--line)', borderRadius: 10, background: 'var(--panel)', padding: '10px 12px' }}>
-                <div style={{ fontFamily: head, fontWeight: 600, fontSize: 14, color: 'var(--text)', marginBottom: 2 }}>{e.term}</div>
-                <div style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--muted)' }}>{e.def}</div>
+              <div key={e.term} style={{ display: 'flex', gap: 12, border: '1px solid var(--line)', borderRadius: 10, background: 'var(--panel)', padding: '10px 12px' }}>
+                <img
+                  src={`/glossary/${imgSlug(e.term)}.webp`}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  decoding="async"
+                  onError={(ev) => {
+                    ev.currentTarget.style.display = 'none'
+                  }}
+                  style={{ flex: 'none', width: 92, height: 70, objectFit: 'contain', borderRadius: 8, border: '1px solid var(--line)', background: '#0a130e' }}
+                />
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontFamily: head, fontWeight: 600, fontSize: 14, color: 'var(--text)', marginBottom: 2 }}>{e.term}</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--muted)' }}>{e.def}</div>
+                </div>
               </div>
             ))
           )}

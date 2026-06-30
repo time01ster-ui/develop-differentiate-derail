@@ -105,6 +105,9 @@ export default function Library({
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 'none' }}>
+            {mode === 'study' && idx < chapters.length - 1 && canBegin && (
+              <button onClick={onBegin} title="Skip the rest of the reading and start the investigation" style={{ minHeight: 32, padding: '6px 12px', borderRadius: 8, border: '1px solid var(--accent)', background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--text)', cursor: 'pointer', fontFamily: mono, fontSize: 11 }}>Skip to the investigation →</button>
+            )}
             <Seal kind="pathway" size={32} />
             {overlay && (
               <button onClick={onClose} aria-label="Close the Library" style={{ minHeight: 36, minWidth: 36, borderRadius: 8, border: '1px solid var(--line)', background: 'transparent', color: 'var(--text)', cursor: 'pointer', fontSize: 16 }}>✕</button>
@@ -277,10 +280,6 @@ export default function Library({
           )}
         </div>
 
-        {/* Once notes are submitted, allow jumping to the investigation from the top. */}
-        {mode === 'study' && idx < chapters.length - 1 && canBegin && (
-          <button onClick={onBegin} style={{ position: 'absolute', top: 14, right: 20, minHeight: 32, padding: '6px 12px', borderRadius: 8, border: '1px solid var(--accent)', background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--text)', cursor: 'pointer', fontFamily: mono, fontSize: 11 }}>Skip to the investigation →</button>
-        )}
       </div>
 
       {/* Floating menu, available while reading a chapter: Home, Glossary, Guided notes, Submit. */}
