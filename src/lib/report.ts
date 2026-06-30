@@ -37,10 +37,30 @@ export interface ReportSixRs {
   next: string
 }
 
+/** One of the five questions an abstract answers, with the raw material from the
+ *  student's run. In the student report these are PROMPTS to compose from, not
+ *  finished sentences. */
+export interface AbstractPart {
+  label: string
+  prompt: string
+  ingredient: string
+}
+
+// Frames for the parts the student must compose themselves, so the report scaffolds
+// the writing instead of handing over finished prose. Used only in the student
+// report (scaffold mode); the exemplar still shows the complete model.
+export const SCAFFOLD = {
+  abstractIntro:
+    'Write your abstract LAST, after the rest of the report. It is one paragraph (about 150 to 300 words) that answers five questions. Your run gives you the raw material for each; put it into your own sentences on the lines provided.',
+  reasoning: 'Explain WHY your evidence supports your claim, using the science. Try: "My evidence shows ___, which supports my claim because ___."',
+  limitation: 'Name one thing your evidence does NOT let you claim, and why. Try: "This shows ___, not ___, because ___."',
+}
+
 export interface LabReport {
   actLabel: string // "Act I · Develop"
   caseLine: string // the one-line case framing for this act
   abstract: string // a model abstract drafted from the run (written last; answers the 5 questions)
+  abstractParts: AbstractPart[] // the five questions + the student's raw ingredients, to compose from
   question: string
   hypothesis: string
   prediction: string
@@ -210,6 +230,18 @@ export function buildReport(state: LoopState, reflections: Reflections, badgeIds
       : `One limit: ${A.pinnedQuote}`
   const abstract = `${q ? q.text : 'We set out to test a question.'} ${motivation} ${methodSentence} We found that ${finding}. We conclude that ${claimLc}, because the difference from the control is ${supported ? 'unlikely to be due to chance' : 'not yet strong enough to claim'}. ${limitBridge}`
 
+  // The same five pieces, but as PROMPTS with the run's raw material (not finished
+  // sentences). The student report shows these so the student composes the abstract;
+  // the exemplar still shows the prose above as the model.
+  const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s)
+  const abstractParts: AbstractPart[] = [
+    { label: 'What you asked', prompt: 'State your question in one sentence.', ingredient: q ? q.text : '(the question you chose)' },
+    { label: 'Why it matters', prompt: 'One sentence: why is this question worth answering?', ingredient: 'Think: who does this help, or what does it explain? (the case is your clue)' },
+    { label: 'How you tested it', prompt: 'One sentence: your method and design.', ingredient: cap(methodSentence.replace(/^To test this, we /, 'we ')) },
+    { label: 'What you found', prompt: 'One sentence: your result, with the numbers.', ingredient: cap(finding) },
+    { label: 'What it means', prompt: 'One or two sentences: your conclusion, plus one honest limit.', ingredient: `${claimClean}. Limit: ${A.pinnedQuote}` },
+  ]
+
   const sixRs: ReportSixRs[] = STAGE_LABELS.map((stage, i) => ({
     stage,
     revised: (reflections[i]?.revision ?? '').trim(),
@@ -226,6 +258,7 @@ export function buildReport(state: LoopState, reflections: Reflections, badgeIds
     actLabel: `Act ${ROMAN[A.index] ?? 'I'} · ${A.shortTitle}`,
     caseLine: frame.caseLine,
     abstract,
+    abstractParts,
     question: q ? q.text : 'No question selected.',
     hypothesis: hyp ? hyp.text : 'No hypothesis selected.',
     prediction: hyp ? hyp.prediction : '',
@@ -299,7 +332,7 @@ function rowsHtml(rows: ReportRow[]): string {
 }
 
 /** Build a standalone HTML document string for the report. */
-export function reportToHtml(r: LabReport, name: string, date: string): string {
+export function reportToHtml(r: LabReport, name: string, date: string, scaffold = false): string {
   const sixRs = r.sixRs
     .map(
       (x) =>
@@ -330,6 +363,9 @@ export function reportToHtml(r: LabReport, name: string, date: string): string {
   .cer{margin-top:24px;border:1.5px solid var(--green);border-radius:12px;padding:18px 20px;background:rgba(31,157,87,.05)}
   .pill{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:5px;color:#fff;display:inline-block;margin-bottom:10px}
   .cer-row{margin-bottom:9px;font-size:13.5px}
+  .apart{margin-bottom:11px} .apart .al{font-weight:700;font-size:13px} .apart .ap{font-size:12.5px;color:#3a4a3e;margin:1px 0 2px} .apart .ai{font-size:11.5px;color:#5c6b60;font-style:italic}
+  .wbox{margin-top:6px;border:1px dashed #b3c0b3;border-radius:6px;min-height:46px;background:linear-gradient(transparent 22px,#e2eae2 22px,#e2eae2 23px,transparent 23px),linear-gradient(transparent 45px,#e2eae2 45px,#e2eae2 46px,transparent 46px)}
+  .scnote{font-size:11px;color:#5c6b60;margin-bottom:10px}
   .tag{font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.12em;margin-right:8px}
   .g{color:var(--green)} .gold{color:var(--gold)}
   .muted{color:var(--muted)}
@@ -343,7 +379,14 @@ export function reportToHtml(r: LabReport, name: string, date: string): string {
     <div class="rank"><div class="eyebrow">RANK</div><div class="n">${esc(r.rank)}</div><div class="muted">${r.xp} research points</div></div>
   </div>
   <div class="who"><div>Student: <b>${esc(name || ' ')}</b></div><div class="muted">Date: ${esc(date)}</div></div>
-  <section><div class="kick">Abstract</div><p style="font-size:11px;color:#5c6b60;margin-bottom:6px">Write this LAST: an abstract is a short summary of the whole report (about 150 to 300 words) that answers what you did, why, how, what you found, and what it means. The draft below is built from your run; refine it in your own words.</p><p>${esc(r.abstract)}</p></section>
+  <section><div class="kick">Abstract</div>${
+    scaffold
+      ? `<p class="scnote">${esc(SCAFFOLD.abstractIntro)}</p>` +
+        r.abstractParts
+          .map((p, i) => `<div class="apart"><div class="al">${i + 1}. ${esc(p.label)}</div><div class="ap">${esc(p.prompt)}</div><div class="ai">From your run: ${esc(p.ingredient)}</div><div class="wbox"></div></div>`)
+          .join('')
+      : `<p class="scnote">Write this LAST: an abstract is a short summary of the whole report (about 150 to 300 words) that answers what you did, why, how, what you found, and what it means. The draft below is built from your run; refine it in your own words.</p><p>${esc(r.abstract)}</p>`
+  }</section>
   <section><div class="kick">01 · Question (Ask)</div><p>${esc(r.question)}</p></section>
   <section><div class="kick">02 · Hypothesis &amp; prediction</div><p>${esc(r.hypothesis)}</p>${r.prediction ? `<p class="muted" style="margin-top:4px;font-size:13px"><span class="tag g">PREDICTION</span>${esc(r.prediction)}</p>` : ''}</section>
   <section><div class="kick">03 · Tools &amp; budget</div>${rowsHtml([{ k: 'Tools selected', v: r.tools.join(' · ') }, { k: 'Evidence ceiling', v: r.ceilingName }, { k: 'Team hired', v: r.hires.length ? r.hires.join(' · ') : 'none' }, { k: 'Grant spent', v: `$${r.budgetSpent.toLocaleString()} of $${r.budgetTotal.toLocaleString()}` }])}</section>
@@ -355,8 +398,13 @@ export function reportToHtml(r: LabReport, name: string, date: string): string {
     <span class="pill" style="background:${r.cer.supported ? 'var(--green)' : 'var(--blocked)'}">${r.cer.supported ? 'SUPPORTED' : 'NOT SUPPORTED'}</span>
     <div class="cer-row"><span class="tag g">CLAIM</span>${esc(r.cer.claim)}</div>
     <div class="cer-row"><span class="tag g">EVIDENCE</span>${esc(r.cer.evidence)}</div>
-    <div class="cer-row"><span class="tag g">REASONING</span>${esc(r.cer.reasoning)}</div>
-    <div class="cer-row"><span class="tag gold">LIMITATION</span>${esc(r.cer.limitation)}</div>
+    ${
+      scaffold
+        ? `<div class="cer-row"><span class="tag g">REASONING</span><span class="muted" style="font-size:12.5px">${esc(SCAFFOLD.reasoning)}</span><div class="wbox"></div></div>
+    <div class="cer-row"><span class="tag gold">LIMITATION</span><span class="muted" style="font-size:12.5px">${esc(SCAFFOLD.limitation)}</span><div class="wbox"></div></div>`
+        : `<div class="cer-row"><span class="tag g">REASONING</span>${esc(r.cer.reasoning)}</div>
+    <div class="cer-row"><span class="tag gold">LIMITATION</span>${esc(r.cer.limitation)}</div>`
+    }
   </div>
   ${r.sixRs.length ? `<section><div class="kick">08 · What I corrected (the 6 Rs · ${r.sixRs.filter((x) => x.revised).length} ${r.sixRs.filter((x) => x.revised).length === 1 ? 'step' : 'steps'} revised)</div>${sixRs}</section>` : ''}
   ${r.badges.length ? `<section><div class="kick">Badges earned</div>${badges}</section>` : ''}

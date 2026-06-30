@@ -13,7 +13,7 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { ExperimentData } from '../lib/measure'
-import { buildReport, reportToHtml, type LabReport } from '../lib/report'
+import { buildReport, reportToHtml, SCAFFOLD, type LabReport } from '../lib/report'
 import type { Reflections } from '../lib/reflections'
 import type { LoopState } from '../state/loop'
 import StatsHelpButton from './StatsExplainer'
@@ -68,7 +68,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 /** The printable document. `name` + `date` are export-time additions; nothing here is persisted. */
-export function LabReportPaper({ report, name, date }: { report: LabReport; name: string; date: string }) {
+export function LabReportPaper({ report, name, date, scaffold = false }: { report: LabReport; name: string; date: string; scaffold?: boolean }) {
   const r = report
   return (
     <div
@@ -109,12 +109,28 @@ export function LabReportPaper({ report, name, date }: { report: LabReport; name
       </div>
 
       <Section title="Abstract">
-        <p style={{ fontSize: 11.5, color: PAPER.muted, marginBottom: 6, lineHeight: 1.5 }}>
-          Write this last. An abstract is a short summary of the whole report (about 150 to 300 words) that answers what
-          you did, why, how, what you found, and what it means. The draft below is built from your run; refine it in your
-          own words.
-        </p>
-        <p style={{ fontSize: 13.5, color: PAPER.ink, lineHeight: 1.55 }}>{r.abstract}</p>
+        {scaffold ? (
+          <>
+            <p style={{ fontSize: 11.5, color: PAPER.muted, marginBottom: 10, lineHeight: 1.5 }}>{SCAFFOLD.abstractIntro}</p>
+            {r.abstractParts.map((p, i) => (
+              <div key={i} style={{ marginBottom: 12 }}>
+                <div style={{ fontWeight: 700, fontSize: 13 }}>{i + 1}. {p.label}</div>
+                <div style={{ fontSize: 12.5, color: '#3a4a3e', margin: '1px 0 2px' }}>{p.prompt}</div>
+                <div style={{ fontSize: 11.5, color: PAPER.muted, fontStyle: 'italic' }}>From your run: {p.ingredient}</div>
+                <WriteBox />
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 11.5, color: PAPER.muted, marginBottom: 6, lineHeight: 1.5 }}>
+              Write this last. An abstract is a short summary of the whole report (about 150 to 300 words) that answers
+              what you did, why, how, what you found, and what it means. The draft below is built from your run; refine it
+              in your own words.
+            </p>
+            <p style={{ fontSize: 13.5, color: PAPER.ink, lineHeight: 1.55 }}>{r.abstract}</p>
+          </>
+        )}
       </Section>
 
       <Section title="01 · Question (Ask)">
@@ -164,8 +180,17 @@ export function LabReportPaper({ report, name, date }: { report: LabReport; name
         </div>
         <CerRow label="CLAIM" body={r.cer.claim} />
         <CerRow label="EVIDENCE" body={r.cer.evidence} />
-        <CerRow label="REASONING" body={r.cer.reasoning} />
-        <CerRow label="LIMITATION" body={r.cer.limitation} accent={PAPER.gold} />
+        {scaffold ? (
+          <>
+            <CerPrompt label="REASONING" prompt={SCAFFOLD.reasoning} />
+            <CerPrompt label="LIMITATION" prompt={SCAFFOLD.limitation} accent={PAPER.gold} />
+          </>
+        ) : (
+          <>
+            <CerRow label="REASONING" body={r.cer.reasoning} />
+            <CerRow label="LIMITATION" body={r.cer.limitation} accent={PAPER.gold} />
+          </>
+        )}
       </section>
 
       {r.sixRs.length > 0 && (
@@ -220,6 +245,33 @@ function CerRow({ label, body, accent = PAPER.green }: { label: string; body: st
   )
 }
 
+/** A blank, lined writing area students compose into (on print, or as a guide). */
+function WriteBox() {
+  return (
+    <div
+      style={{
+        marginTop: 6,
+        border: '1px dashed #b3c0b3',
+        borderRadius: 6,
+        minHeight: 46,
+        background:
+          'linear-gradient(transparent 22px, #e2eae2 22px, #e2eae2 23px, transparent 23px), linear-gradient(transparent 45px, #e2eae2 45px, #e2eae2 46px, transparent 46px)',
+      }}
+    />
+  )
+}
+
+/** A CER row the student must compose: the label, a prompt with a sentence frame, and space to write. */
+function CerPrompt({ label, prompt, accent = PAPER.green }: { label: string; prompt: string; accent?: string }) {
+  return (
+    <div style={{ marginBottom: 9 }}>
+      <span style={{ fontFamily: mono, fontSize: 9.5, fontWeight: 700, letterSpacing: '.12em', color: accent }}>{label}&nbsp;&nbsp;</span>
+      <span style={{ fontSize: 12.5, color: PAPER.muted }}>{prompt}</span>
+      <WriteBox />
+    </div>
+  )
+}
+
 function download(filename: string, html: string) {
   try {
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
@@ -261,7 +313,7 @@ export default function LabReportButton({ state, reflections, badges, data, onOp
   }
 
   const onDownload = () => {
-    download(`lab-report-${slug(report.actLabel)}-${slug(name)}.html`, reportToHtml(report, name, date))
+    download(`lab-report-${slug(report.actLabel)}-${slug(name)}.html`, reportToHtml(report, name, date, true))
   }
 
   return (
@@ -327,7 +379,7 @@ export default function LabReportButton({ state, reflections, badges, data, onOp
               </button>
             </div>
 
-            <LabReportPaper report={report} name={name} date={date} />
+            <LabReportPaper report={report} name={name} date={date} scaffold />
           </div>,
           document.body,
         )}

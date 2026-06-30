@@ -267,7 +267,7 @@ export default function Library({
 
       {/* Floating menu, available while reading a chapter: Home, Glossary, Guided notes, Submit. */}
       {!ext && (
-        <div style={{ position: 'fixed', right: 16, bottom: 16, zIndex: 26, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ position: 'fixed', right: 16, bottom: 92, zIndex: 26, display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[
             { icon: '🏠', label: 'Home', on: onHome },
             { icon: '📖', label: 'Glossary', on: () => setPanel('glossary') },
