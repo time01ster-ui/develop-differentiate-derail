@@ -7,6 +7,9 @@ import Define from './Define'
 import { Seal } from './Seal'
 import { CollectiveMigration, EmbryoFace, Pseudoreplication, SpacingContrast } from './art/SciArt'
 import { asset } from '../lib/asset'
+import GlossaryPanel from './GlossaryPanel'
+import GuidedNotes from './GuidedNotes'
+import Submission from './Submission'
 
 const mono = "'IBM Plex Mono'"
 
@@ -27,14 +30,17 @@ export default function Library({
   mode,
   onBegin,
   onClose,
+  onSubmitReading,
   initialChapter,
 }: {
   chapters: LibraryChapter[]
   mode: 'study' | 'reference'
   onBegin?: () => void
   onClose?: () => void
+  onSubmitReading?: () => void
   initialChapter?: string
 }) {
+  const [panel, setPanel] = useState<null | 'glossary' | 'notes' | 'submit'>(null)
   const startIdx = useMemo(() => {
     const i = chapters.findIndex((c) => c.id === initialChapter)
     return i >= 0 ? i : 0
@@ -50,6 +56,13 @@ export default function Library({
     setIdx(next)
     setViewed((v) => new Set(v).add(next))
     document.getElementById('lib-content')?.scrollTo({ top: 0 })
+  }
+
+  // Floating "Home": in reference mode (opened during the loop) it closes the
+  // Library back to the stage; in study mode it returns to the top of the reading.
+  const onHome = () => {
+    if (onClose) onClose()
+    else go(0)
   }
 
   const overlay = mode === 'reference'
@@ -251,6 +264,32 @@ export default function Library({
           <button onClick={onBegin} style={{ position: 'absolute', top: 14, right: 20, minHeight: 32, padding: '6px 12px', borderRadius: 8, border: '1px solid var(--accent)', background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--text)', cursor: 'pointer', fontFamily: mono, fontSize: 11 }}>Skip to the investigation →</button>
         )}
       </div>
+
+      {/* Floating menu, available while reading a chapter: Home, Glossary, Guided notes, Submit. */}
+      {!ext && (
+        <div style={{ position: 'fixed', right: 16, bottom: 16, zIndex: 26, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[
+            { icon: '🏠', label: 'Home', on: onHome },
+            { icon: '📖', label: 'Glossary', on: () => setPanel('glossary') },
+            { icon: '📝', label: 'Guided notes', on: () => setPanel('notes') },
+            { icon: '📤', label: 'Submit', on: () => setPanel('submit') },
+          ].map((b) => (
+            <button
+              key={b.label}
+              onClick={b.on}
+              title={b.label}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 40, padding: '8px 14px', borderRadius: 22, border: '1px solid color-mix(in srgb, var(--accent) 45%, var(--line))', background: 'color-mix(in srgb, var(--accent) 16%, var(--panel))', color: 'var(--text)', cursor: 'pointer', boxShadow: '0 6px 20px rgba(0,0,0,.4)', fontFamily: mono, fontSize: 12 }}
+            >
+              <span aria-hidden style={{ fontSize: 15 }}>{b.icon}</span>
+              {b.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {panel === 'glossary' && <GlossaryPanel onClose={() => setPanel(null)} />}
+      {panel === 'notes' && <GuidedNotes ch={ch} onClose={() => setPanel(null)} />}
+      {panel === 'submit' && <Submission ch={ch} onSubmitReading={() => onSubmitReading?.()} onClose={() => setPanel(null)} />}
     </div>
   )
 }
