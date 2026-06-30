@@ -306,7 +306,7 @@ export default function Library({
 
       {panel === 'glossary' && <GlossaryPanel onClose={() => setPanel(null)} />}
       {panel === 'notes' && <GuidedNotes ch={ch} onClose={() => setPanel(null)} />}
-      {panel === 'submit' && <Submission ch={ch} onSubmitReading={() => onSubmitReading?.()} onClose={() => setPanel(null)} />}
+      {panel === 'submit' && <Submission ch={ch} onSubmitReading={() => onSubmitReading?.()} onClose={() => setPanel(null)} onOpenNotes={() => setPanel('notes')} />}
     </div>
   )
 }

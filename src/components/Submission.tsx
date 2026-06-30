@@ -65,7 +65,7 @@ function downloadHandIn(ch: LibraryChapter, id: string, period: string, name: st
   }
 }
 
-export default function Submission({ ch, onSubmitReading, onClose }: { ch: LibraryChapter; onSubmitReading: () => void; onClose: () => void }) {
+export default function Submission({ ch, onSubmitReading, onClose, onOpenNotes }: { ch: LibraryChapter; onSubmitReading: () => void; onClose: () => void; onOpenNotes?: () => void }) {
   const [id, setId] = useState('')
   const [period, setPeriod] = useState('')
   const [name, setName] = useState('')
@@ -128,9 +128,12 @@ export default function Submission({ ch, onSubmitReading, onClose }: { ch: Libra
                     <span style={{ color: r.done ? 'var(--muted)' : 'var(--text)' }}>{r.label}</span>
                   </div>
                 ))}
-                {!complete && (
-                  <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 6 }}>Open <b>📝 Guided Notes</b> from the menu to write your notes (your writing saves as you go).</div>
-                )}
+                {!complete &&
+                  (onOpenNotes ? (
+                    <button onClick={onOpenNotes} style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 7, minHeight: 38, padding: '8px 14px', borderRadius: 9, border: '1px solid var(--accent)', background: 'color-mix(in srgb, var(--accent) 16%, transparent)', color: 'var(--text)', cursor: 'pointer', fontFamily: head, fontWeight: 600, fontSize: 13 }}>📝 Open Guided Notes to write them →</button>
+                  ) : (
+                    <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 6 }}>Open <b>📝 Guided Notes</b> from the menu to write your notes (your writing saves as you go).</div>
+                  ))}
               </div>
             )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
