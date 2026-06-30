@@ -13,6 +13,7 @@ import CreditsPanel from './components/CreditsPanel'
 import IntroModal from './components/IntroModal'
 import Onboarding from './components/Onboarding'
 import Library from './components/Library'
+import GlossaryPanel from './components/GlossaryPanel'
 import ReflectionPanel from './components/ReflectionPanel'
 import { ActStory, ProcessExplainer, StageBanner, StepGoal } from './components/StageChrome'
 import ForcesRail from './components/ForcesRail'
@@ -159,6 +160,7 @@ export default function App() {
   const [game, setGame] = useState<GameState>(loadGame)
   const [achievementsOpen, setAchievementsOpen] = useState(false)
   const [budgetOpen, setBudgetOpen] = useState(false)
+  const [glossaryOpen, setGlossaryOpen] = useState(false)
   const [toast, setToast] = useState<Badge | null>(null)
   const [sawHonestN, setSawHonestN] = useState(false)
   const mainRef = useRef<HTMLElement>(null)
@@ -410,6 +412,26 @@ export default function App() {
             onBack={() => dispatch({ type: 'BACK' })}
             onNext={() => dispatch({ type: 'NEXT' })}
           />
+
+          {/* Floating dock on every loop stage: Home (the study Library, where the
+              per-chapter Guided notes + Submit live) and a Glossary you can open to
+              look up any term without leaving the investigation. */}
+          <div style={{ position: 'fixed', right: 16, bottom: 88, zIndex: 26, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { icon: '🏠', label: 'Home', on: () => openLibrary() },
+              { icon: '📖', label: 'Glossary', on: () => setGlossaryOpen(true) },
+            ].map((b) => (
+              <button
+                key={b.label}
+                onClick={b.on}
+                title={b.label}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 40, padding: '8px 14px', borderRadius: 22, border: '1px solid color-mix(in srgb, var(--accent) 45%, var(--line))', background: 'color-mix(in srgb, var(--accent) 16%, var(--panel))', color: 'var(--text)', cursor: 'pointer', boxShadow: '0 6px 20px rgba(0,0,0,.4)', fontFamily: "'IBM Plex Mono'", fontSize: 12 }}
+              >
+                <span aria-hidden style={{ fontSize: 15 }}>{b.icon}</span>
+                {b.label}
+              </button>
+            ))}
+          </div>
         </>
       )}
 
@@ -417,6 +439,7 @@ export default function App() {
       {introOpen && <IntroModal onClose={() => setIntroOpen(false)} />}
       {achievementsOpen && <AchievementsPanel game={game} onClose={() => setAchievementsOpen(false)} />}
       {budgetOpen && <BudgetPanel state={state} onClose={() => setBudgetOpen(false)} />}
+      {glossaryOpen && <GlossaryPanel onClose={() => setGlossaryOpen(false)} />}
       <XpToast badge={toast} />
       {libraryOpen && (
         <Library mode="reference" chapters={A.chapters} initialChapter={libraryChapter} onClose={() => setLibraryOpen(false)} onSubmitReading={() => dispatch({ type: 'SUBMIT_READING' })} />
