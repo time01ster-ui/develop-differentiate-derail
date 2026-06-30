@@ -10,7 +10,7 @@
 // accents) so it reads and prints as a hand-in artifact, on screen and on paper.
 // This is the sim's own brand, not the portal's /learn purple-on-white rule.
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { ExperimentData } from '../lib/measure'
 import { buildReport, reportToHtml, SCAFFOLD, type LabReport } from '../lib/report'
@@ -72,7 +72,7 @@ function Section({ title, guideKey, children }: { title: string; guideKey?: stri
 }
 
 /** The printable document. `name` + `date` are export-time additions; nothing here is persisted. */
-export function LabReportPaper({ report, name, date, scaffold = false }: { report: LabReport; name: string; date: string; scaffold?: boolean }) {
+export function LabReportPaper({ report, name, date, scaffold = false, answers, onAnswer }: { report: LabReport; name: string; date: string; scaffold?: boolean; answers?: Record<string, string>; onAnswer?: (id: string, v: string) => void }) {
   const r = report
   return (
     <div
@@ -121,7 +121,7 @@ export function LabReportPaper({ report, name, date, scaffold = false }: { repor
                 <div style={{ fontWeight: 700, fontSize: 13 }}>{i + 1}. {p.label}</div>
                 <div style={{ fontSize: 12.5, color: '#3a4a3e', margin: '1px 0 2px' }}>{p.prompt}</div>
                 <div style={{ fontSize: 11.5, color: PAPER.muted, fontStyle: 'italic' }}>From your run: {p.ingredient}</div>
-                <WriteBox />
+                <WriteBox value={answers?.[`abstract-${i}`] ?? ''} onChange={(v) => onAnswer?.(`abstract-${i}`, v)} />
               </div>
             ))}
           </>
@@ -186,8 +186,8 @@ export function LabReportPaper({ report, name, date, scaffold = false }: { repor
         <CerRow label="EVIDENCE" body={r.cer.evidence} guideKey={scaffold ? 'evidence' : undefined} />
         {scaffold ? (
           <>
-            <CerPrompt label="REASONING" prompt={SCAFFOLD.reasoning} guideKey="reasoning" />
-            <CerPrompt label="LIMITATION" prompt={SCAFFOLD.limitation} accent={PAPER.gold} guideKey="limitation" />
+            <CerPrompt label="REASONING" prompt={SCAFFOLD.reasoning} guideKey="reasoning" value={answers?.['reasoning'] ?? ''} onChange={(v) => onAnswer?.('reasoning', v)} />
+            <CerPrompt label="LIMITATION" prompt={SCAFFOLD.limitation} accent={PAPER.gold} guideKey="limitation" value={answers?.['limitation'] ?? ''} onChange={(v) => onAnswer?.('limitation', v)} />
           </>
         ) : (
           <>
@@ -250,30 +250,51 @@ function CerRow({ label, body, accent = PAPER.green, guideKey }: { label: string
   )
 }
 
-/** A blank, lined writing area students compose into (on print, or as a guide). */
-function WriteBox() {
+/** A typeable, auto-growing writing area. Students can type their answer here
+ *  (saved as they go); the blank/printed form gives the same box to write by hand. */
+function WriteBox({ value = '', onChange }: { value?: string; onChange?: (v: string) => void }) {
+  const ref = useRef<HTMLTextAreaElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (el) {
+      el.style.height = 'auto'
+      el.style.height = `${Math.max(54, el.scrollHeight)}px`
+    }
+  }, [value])
   return (
-    <div
+    <textarea
+      ref={ref}
+      value={value}
+      onChange={(e) => onChange?.(e.target.value)}
+      placeholder="Type your answer here, or print the blank form to write by hand."
       style={{
         marginTop: 6,
+        width: '100%',
+        boxSizing: 'border-box',
         border: '1px dashed #b3c0b3',
         borderRadius: 6,
-        minHeight: 46,
-        background:
-          'linear-gradient(transparent 22px, #e2eae2 22px, #e2eae2 23px, transparent 23px), linear-gradient(transparent 45px, #e2eae2 45px, #e2eae2 46px, transparent 46px)',
+        minHeight: 54,
+        padding: '7px 9px',
+        fontFamily: 'inherit',
+        fontSize: 12.5,
+        color: PAPER.ink,
+        lineHeight: 1.6,
+        background: '#fff',
+        resize: 'vertical',
+        overflow: 'hidden',
       }}
     />
   )
 }
 
 /** A CER row the student must compose: the label, a prompt with a sentence frame, and space to write. */
-function CerPrompt({ label, prompt, accent = PAPER.green, guideKey }: { label: string; prompt: string; accent?: string; guideKey?: string }) {
+function CerPrompt({ label, prompt, accent = PAPER.green, guideKey, value, onChange }: { label: string; prompt: string; accent?: string; guideKey?: string; value?: string; onChange?: (v: string) => void }) {
   return (
     <div style={{ marginBottom: 9 }}>
       <span style={{ fontFamily: mono, fontSize: 9.5, fontWeight: 700, letterSpacing: '.12em', color: accent }}>{label}&nbsp;&nbsp;</span>
       <span style={{ fontSize: 12.5, color: PAPER.muted }}>{prompt}</span>
       {guideKey && <DeepDiveLink sectionKey={guideKey} />}
-      <WriteBox />
+      <WriteBox value={value} onChange={onChange} />
     </div>
   )
 }
@@ -298,6 +319,24 @@ function slug(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'student'
 }
 
+// Typed answers persist per act so a student's composing survives reloads. Local
+// only; never transmitted (the hand-in is a download, like the guided notes).
+const answersKey = (act: string) => `ddd_report_answers_${act}`
+function loadAnswers(act: string): Record<string, string> {
+  try {
+    return JSON.parse(localStorage.getItem(answersKey(act)) || '{}')
+  } catch {
+    return {}
+  }
+}
+function saveAnswers(act: string, a: Record<string, string>) {
+  try {
+    localStorage.setItem(answersKey(act), JSON.stringify(a))
+  } catch {
+    /* ignore */
+  }
+}
+
 /** The button students see on the Iterate stage, plus its export overlay. */
 export default function LabReportButton({ state, reflections, badges, data, onOpenChange }: { state: LoopState; reflections: Reflections; badges: string[]; data?: ExperimentData; onOpenChange?: (open: boolean) => void }) {
   const [open, setOpenRaw] = useState(false)
@@ -306,6 +345,13 @@ export default function LabReportButton({ state, reflections, badges, data, onOp
     onOpenChange?.(v)
   }
   const [name, setName] = useState('')
+  const [answers, setAnswers] = useState<Record<string, string>>(() => loadAnswers(state.act))
+  const onAnswer = (id: string, v: string) =>
+    setAnswers((prev) => {
+      const next = { ...prev, [id]: v }
+      saveAnswers(state.act, next)
+      return next
+    })
   const report = buildReport(state, reflections, badges, data)
   const date = todayLabel()
 
@@ -318,8 +364,12 @@ export default function LabReportButton({ state, reflections, badges, data, onOp
     }, 500)
   }
 
+  // Filled with whatever the student typed; the blank version omits the answers.
   const onDownload = () => {
-    download(`lab-report-${slug(report.actLabel)}-${slug(name)}.html`, reportToHtml(report, name, date, true))
+    download(`lab-report-${slug(report.actLabel)}-${slug(name)}.html`, reportToHtml(report, name, date, true, answers))
+  }
+  const onDownloadBlank = () => {
+    download(`lab-report-BLANK-${slug(report.actLabel)}.html`, reportToHtml(report, name, date, true))
   }
 
   return (
@@ -374,21 +424,24 @@ export default function LabReportButton({ state, reflections, badges, data, onOp
                 />
               </label>
               <StatsHelpButton context={state.act === 'differentiate' ? 'bench' : 'spacing'} compact />
-              <button onClick={onPrint} style={btn('var(--c-green)')}>
-                🖨 Print blank form
-              </button>
               <button onClick={onDownload} style={btn('var(--accent)')}>
-                ⬇ Download blank form
+                ⬇ Download my report
+              </button>
+              <button onClick={onPrint} style={btn('var(--c-green)')}>
+                🖨 Print
+              </button>
+              <button onClick={onDownloadBlank} style={btn('var(--line)')}>
+                ⬇ Blank form
               </button>
               <button onClick={() => setOpen(false)} style={btn('var(--line)', true)}>
                 Close
               </button>
             </div>
             <div className="ddd-report-noprint" style={{ maxWidth: 820, margin: '0 auto 14px', fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.5 }}>
-              On screen, every section has a <b style={{ color: 'var(--text)' }}>How to write this</b> link with a step-by-step guide and tutorials. Download or print the blank form to compose your answers in the spaces provided.
+              Type your answers right in the boxes below (they save as you go), then <b style={{ color: 'var(--text)' }}>Download my report</b> or <b style={{ color: 'var(--text)' }}>Print</b>. Prefer to write by hand? Use <b style={{ color: 'var(--text)' }}>Blank form</b>. Every section also has a <b style={{ color: 'var(--text)' }}>How to write this</b> link with a step-by-step guide and tutorials.
             </div>
 
-            <LabReportPaper report={report} name={name} date={date} scaffold />
+            <LabReportPaper report={report} name={name} date={date} scaffold answers={answers} onAnswer={onAnswer} />
           </div>,
           document.body,
         )}

@@ -332,7 +332,7 @@ function rowsHtml(rows: ReportRow[]): string {
 }
 
 /** Build a standalone HTML document string for the report. */
-export function reportToHtml(r: LabReport, name: string, date: string, scaffold = false): string {
+export function reportToHtml(r: LabReport, name: string, date: string, scaffold = false, answers?: Record<string, string>): string {
   const sixRs = r.sixRs
     .map(
       (x) =>
@@ -364,7 +364,7 @@ export function reportToHtml(r: LabReport, name: string, date: string, scaffold 
   .pill{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:5px;color:#fff;display:inline-block;margin-bottom:10px}
   .cer-row{margin-bottom:9px;font-size:13.5px}
   .apart{margin-bottom:11px} .apart .al{font-weight:700;font-size:13px} .apart .ap{font-size:12.5px;color:#3a4a3e;margin:1px 0 2px} .apart .ai{font-size:11.5px;color:#5c6b60;font-style:italic}
-  .wbox{margin-top:6px;border:1px dashed #b3c0b3;border-radius:6px;min-height:46px;background:linear-gradient(transparent 22px,#e2eae2 22px,#e2eae2 23px,transparent 23px),linear-gradient(transparent 45px,#e2eae2 45px,#e2eae2 46px,transparent 46px)}
+  .wbox{margin-top:6px;border:1px dashed #b3c0b3;border-radius:6px;min-height:46px;padding:7px 9px;font-size:12.5px;color:#16261a;line-height:1.7;white-space:pre-wrap;background:linear-gradient(transparent 28px,#e7eee7 28px,#e7eee7 29px,transparent 29px),linear-gradient(transparent 51px,#e7eee7 51px,#e7eee7 52px,transparent 52px),linear-gradient(transparent 74px,#e7eee7 74px,#e7eee7 75px,transparent 75px)}
   .scnote{font-size:11px;color:#5c6b60;margin-bottom:10px}
   .tag{font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.12em;margin-right:8px}
   .g{color:var(--green)} .gold{color:var(--gold)}
@@ -383,7 +383,7 @@ export function reportToHtml(r: LabReport, name: string, date: string, scaffold 
     scaffold
       ? `<p class="scnote">${esc(SCAFFOLD.abstractIntro)}</p>` +
         r.abstractParts
-          .map((p, i) => `<div class="apart"><div class="al">${i + 1}. ${esc(p.label)}</div><div class="ap">${esc(p.prompt)}</div><div class="ai">From your run: ${esc(p.ingredient)}</div><div class="wbox"></div></div>`)
+          .map((p, i) => `<div class="apart"><div class="al">${i + 1}. ${esc(p.label)}</div><div class="ap">${esc(p.prompt)}</div><div class="ai">From your run: ${esc(p.ingredient)}</div><div class="wbox">${esc(answers?.[`abstract-${i}`] ?? '')}</div></div>`)
           .join('')
       : `<p class="scnote">Write this LAST: an abstract is a short summary of the whole report (about 150 to 300 words) that answers what you did, why, how, what you found, and what it means. The draft below is built from your run; refine it in your own words.</p><p>${esc(r.abstract)}</p>`
   }</section>
@@ -400,8 +400,8 @@ export function reportToHtml(r: LabReport, name: string, date: string, scaffold 
     <div class="cer-row"><span class="tag g">EVIDENCE</span>${esc(r.cer.evidence)}</div>
     ${
       scaffold
-        ? `<div class="cer-row"><span class="tag g">REASONING</span><span class="muted" style="font-size:12.5px">${esc(SCAFFOLD.reasoning)}</span><div class="wbox"></div></div>
-    <div class="cer-row"><span class="tag gold">LIMITATION</span><span class="muted" style="font-size:12.5px">${esc(SCAFFOLD.limitation)}</span><div class="wbox"></div></div>`
+        ? `<div class="cer-row"><span class="tag g">REASONING</span><span class="muted" style="font-size:12.5px">${esc(SCAFFOLD.reasoning)}</span><div class="wbox">${esc(answers?.['reasoning'] ?? '')}</div></div>
+    <div class="cer-row"><span class="tag gold">LIMITATION</span><span class="muted" style="font-size:12.5px">${esc(SCAFFOLD.limitation)}</span><div class="wbox">${esc(answers?.['limitation'] ?? '')}</div></div>`
         : `<div class="cer-row"><span class="tag g">REASONING</span>${esc(r.cer.reasoning)}</div>
     <div class="cer-row"><span class="tag gold">LIMITATION</span>${esc(r.cer.limitation)}</div>`
     }
