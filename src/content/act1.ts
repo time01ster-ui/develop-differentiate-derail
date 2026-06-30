@@ -68,6 +68,59 @@ export const CLAIMS: ClaimOpt[] = [
   { id: 'tension', req: 4, text: 'FN1 generates the mechanical tension that orders the cells building the bone.' },
 ]
 
+/** Candidate "control groups" the student chooses among at Design. One real
+ *  negative control ('neg', the comparison the claim rests on), one positive
+ *  control ('pos', a method check), and distractors that teach what a control is
+ *  NOT. The `why` is revealed only after the option is chosen. */
+export interface ControlOption {
+  id: string
+  kind: 'negative' | 'positive' | 'distractor'
+  label: string
+  why: string
+  good: boolean
+}
+
+export const CONTROLS: ControlOption[] = [
+  { id: 'neg', kind: 'negative', good: true,
+    label: 'FN1-blocked tissue: same embryo stage, same prep, only the FN1 road removed',
+    why: 'A real control (a negative control). It changes one thing, the FN1 road, and keeps everything else the same. So if the spacing differs, FN1 is the reason, not some other difference. This is the comparison your claim rests on.' },
+  { id: 'pos', kind: 'positive', good: true,
+    label: 'A sample you already know is regularly spaced, run through the same pipeline',
+    why: 'A positive control. It checks your method, not the biology: you already know this sample should read as ordered, so if your tools call it flat, the problem is your measurement. It proves the test can detect spacing when spacing is really there.' },
+  { id: 'same', kind: 'distractor', good: false,
+    label: 'The same FN1-rich embryo, imaged a second time',
+    why: 'Not a control. It is the same sample measured twice (a technical repeat), so it cannot show what happens without FN1, and treating it as a separate sample fakes your independence.' },
+  { id: 'organ', kind: 'distractor', good: false,
+    label: 'A slice of a different organ, like the limb bud',
+    why: 'Not a good control. It differs from your tissue in many ways at once, so if the spacing differs you cannot tell whether FN1 or one of those other differences caused it. A control changes only ONE thing.' },
+  { id: 'none', kind: 'distractor', good: false,
+    label: 'No comparison group, just describe the FN1-rich tissue carefully',
+    why: 'Not a control at all. With nothing to compare against, even a beautiful, even pattern supports no claim. A control is what turns a picture into evidence.' },
+  { id: 'mag', kind: 'distractor', good: false,
+    label: 'The same FN1-rich tissue, just at higher magnification',
+    why: 'Not a control. Changing the zoom changes the measurement itself; it does not remove the FN1 road, so it cannot isolate what FN1 does.' },
+]
+
+/** The Claim / Evidence / Reasoning for each claim, so Conclude can say not just
+ *  whether a claim is allowed but WHY it is or is not supported by the evidence. */
+export const CLAIM_CER: Record<string, { evidence: string; supported: string; notSupported: string }> = {
+  spaced: {
+    evidence: 'You compared the FN1-rich tissue against your FN1-blocked control and measured the nuclear spacing with Voronoi nearest-neighbor, across several replicates.',
+    supported: 'Spacing is exactly what this claim is about, and your control isolates the FN1 road, so a spacing difference is real evidence about FN1. The claim says only what your most direct tool actually measured, so it is supported.',
+    notSupported: '',
+  },
+  migrate: {
+    evidence: 'You measured WHERE the cells sit in a single snapshot, not how they MOVE over time.',
+    supported: 'Live, time-lapse imaging would let you watch the cells travel along the FN1 road, which is what a movement claim needs.',
+    notSupported: 'A movement claim has to watch change over time. One snapshot of spacing cannot show cells traveling in a direction, so the evidence does not reach this claim.',
+  },
+  tension: {
+    evidence: 'You measured WHERE the cells sit (their spacing). You had no tool for the force between them.',
+    supported: '',
+    notSupported: 'A force claim needs a force measurement. Spacing cannot tell apart "FN1 pulls the cells into place" from "the cells are crowded because the space narrows." Example: seeing two people standing close together does not prove one is pulling the other, you would have to measure the pull. Application: your image shows the cells are evenly spaced, which you can claim, but it cannot show FN1 is pulling them, which you cannot.',
+  },
+}
+
 /**
  * Tap-to-reveal "why?" notes per rung (touch-first, no hover dependence).
  * The locked-rung text is grounded in the Atit-lab conversation: a direct force

@@ -3,6 +3,7 @@ import type { Action, LoopState } from '../../state/loop'
 import Define from '../Define'
 import { PiBrief, NotebookNote } from '../StageChrome'
 import { ACT1_DESIGN_NOTE } from '../../content/story'
+import { CONTROLS } from '../../content/act1'
 import { Kicker, StageH1 } from './ui'
 
 export default function DesignStage({ state, dispatch }: { state: LoopState; dispatch: Dispatch<Action> }) {
@@ -32,7 +33,7 @@ export default function DesignStage({ state, dispatch }: { state: LoopState; dis
       </p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 16px', marginBottom: 22, fontFamily: "'IBM Plex Mono'", fontSize: 11.5 }}>
         {[
-          { ok: state.control, label: 'Control on' },
+          { ok: state.control, label: 'Control chosen' },
           { ok: state.replicates >= 3, label: `3+ embryos (now ${state.replicates})` },
           { ok: !!state.distance, label: 'Distance labeled' },
         ].map((c) => (
@@ -42,64 +43,44 @@ export default function DesignStage({ state, dispatch }: { state: LoopState; dis
         ))}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* Control group */}
-        <div
-          style={{
-            border: `1.5px solid ${state.control ? 'var(--c-green)' : 'var(--line)'}`,
-            borderRadius: 13,
-            background: 'var(--panel)',
-            padding: '18px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 20,
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ minWidth: 220, flex: 1 }}>
-            <div style={{ fontFamily: "'Space Grotesk'", fontWeight: 600, fontSize: 16, marginBottom: 3 }}>Add a control group</div>
-            <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>
-              A <Define t="control group">control</Define> is a second group you compare against. Here it's
-              FN1-blocked tissue. Without it, a pretty picture supports nothing. <b>Turn this on.</b>
-              <details style={{ marginTop: 6 }}>
-                <summary style={{ cursor: 'pointer', color: 'var(--accent)', fontSize: 12.5 }}>why read the spread, not just the average?</summary>
-                <span style={{ display: 'block', marginTop: 5 }}>Blocking FN1 also crowds the cells, so look at the regularity of the spacing (how even the gaps are), not only the average distance.</span>
-              </details>
-            </div>
+        {/* Control group: the student chooses the right one (positive, negative, distractors) */}
+        <div style={{ border: `1.5px solid ${state.control ? 'var(--c-green)' : 'var(--line)'}`, borderRadius: 13, background: 'var(--panel)', padding: '18px 20px' }}>
+          <div style={{ fontFamily: "'Space Grotesk'", fontWeight: 600, fontSize: 16, marginBottom: 4 }}>Choose your control</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5, marginBottom: 14 }}>
+            A <Define t="control group">control</Define> is the comparison that isolates the one thing you are testing, here the FN1 road. Pick the comparison that changes <b>only</b> that. A <b>positive control</b> (a sample you already know is ordered) is a strong addition that checks your method. Tap an option to see why it is or is not a control. One of these is the control your claim will rest on.
           </div>
-          <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: "'IBM Plex Mono'", fontSize: 12, letterSpacing: '.12em', fontWeight: 600, color: state.control ? 'var(--c-green)' : 'var(--muted)', width: 30, textAlign: 'right' }}>
-              {state.control ? 'ON' : 'OFF'}
-            </span>
-            <button
-              onClick={() => dispatch({ type: 'TOGGLE_CONTROL' })}
-              role="switch"
-              aria-checked={state.control}
-              aria-label="Control group on or off"
-              style={{
-                width: 60,
-                height: 32,
-                borderRadius: 32,
-                border: 'none',
-                cursor: 'pointer',
-                background: state.control ? 'var(--c-green)' : 'var(--bg2)',
-                position: 'relative',
-                transition: 'background .2s',
-              }}
-            >
-              <span
-                style={{
-                  position: 'absolute',
-                  top: 3,
-                  left: state.control ? 31 : 3,
-                  width: 26,
-                  height: 26,
-                  borderRadius: '50%',
-                  background: '#fff',
-                  transition: 'left .2s',
-                }}
-              />
-            </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {CONTROLS.map((c) => {
+              const sel = state.controlChoices.includes(c.id)
+              const okColor = c.good ? 'var(--c-green)' : 'var(--c-amber)'
+              return (
+                <div
+                  key={c.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => dispatch({ type: 'TOGGLE_CONTROL_CHOICE', id: c.id })}
+                  onKeyDown={onCardKey}
+                  aria-pressed={sel}
+                  style={{ border: `1.5px solid ${sel ? okColor : 'var(--line)'}`, borderRadius: 10, background: sel ? `color-mix(in srgb, ${okColor} 10%, var(--panel2))` : 'var(--panel2)', padding: '12px 14px', cursor: 'pointer' }}
+                >
+                  <div style={{ fontSize: 13.5, color: 'var(--text)', fontWeight: 500, lineHeight: 1.45 }}>
+                    {sel ? (c.good ? '✓ ' : '○ ') : ''}
+                    {c.label}
+                  </div>
+                  {sel && (
+                    <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 12, lineHeight: 1.55, marginTop: 8, color: c.good ? 'var(--c-green)' : 'var(--c-amber)' }}>
+                      {c.good ? '✓ ' : '✗ not a control · '}
+                      {c.why}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          <div style={{ fontFamily: "'IBM Plex Mono'", fontSize: 11.5, marginTop: 12, color: state.control ? 'var(--c-green)' : 'var(--c-amber)' }}>
+            {state.control
+              ? '✓ You chose the control that isolates FN1. (The positive control is a strong extra check.)'
+              : '⚠ Pick the comparison that changes only the FN1 road and keeps everything else the same.'}
           </div>
         </div>
 

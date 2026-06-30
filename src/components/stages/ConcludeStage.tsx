@@ -1,5 +1,5 @@
 import type { Dispatch } from 'react'
-import { CLAIMS, RUNG_COLORS, RUNG_NAMES } from '../../content/act1'
+import { CLAIMS, CLAIM_CER, RUNG_COLORS, RUNG_NAMES } from '../../content/act1'
 import { ceiling, type Action, type LoopState } from '../../state/loop'
 import Define from '../Define'
 import { PiBrief, NotebookNote } from '../StageChrome'
@@ -32,7 +32,17 @@ export default function ConcludeStage({ state, dispatch }: { state: LoopState; d
           <b><Define t="tension">force</Define></b> between them. A force claim needs a tool you couldn't reach in this lab.
         </p>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 13, marginTop: 20 }}>
+      {/* CER framing: a conclusion is a claim + the evidence + the reasoning that links them */}
+      <div style={{ border: '1px solid color-mix(in srgb, var(--accent) 30%, var(--line))', borderRadius: 12, background: 'color-mix(in srgb, var(--accent) 5%, var(--panel))', padding: '12px 14px', marginTop: 18 }}>
+        <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.12em', color: 'var(--accent)', marginBottom: 6 }}>CLAIM · EVIDENCE · REASONING</div>
+        <p style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--text)' }}>
+          A conclusion is not just a guess you are "allowed" to make. It has three parts: a <b>claim</b> (one sentence
+          you think is true), the <b>evidence</b> (what you actually measured), and the <b>reasoning</b> that links them
+          (why that evidence does or does not back that claim). Pick a claim below and you will see all three: the
+          evidence it rests on, and exactly why it is or is not supported.
+        </p>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 13, marginTop: 16 }}>
         {CLAIMS.map((c) => {
           const sel = state.claim === c.id
           const ok = c.req <= ceil
@@ -78,7 +88,23 @@ export default function ConcludeStage({ state, dispatch }: { state: LoopState; d
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 15.5, lineHeight: 1.45, color: 'var(--text)', fontWeight: 500 }}>{c.text}</div>
                 {sel && (
-                  <div style={{ fontFamily: mono, fontSize: 12, marginTop: 9, color: vColor, lineHeight: 1.45 }}>{verdict}</div>
+                  <div style={{ marginTop: 9 }}>
+                    <div style={{ fontFamily: mono, fontSize: 12, color: vColor, lineHeight: 1.45, marginBottom: CLAIM_CER[c.id] ? 9 : 0 }}>{verdict}</div>
+                    {CLAIM_CER[c.id] && (
+                      <div style={{ borderLeft: `2px solid ${ok ? 'var(--c-green)' : 'var(--c-pink)'}`, paddingLeft: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--text)' }}>
+                          <span style={{ fontFamily: mono, fontSize: 9.5, letterSpacing: '.1em', color: 'var(--c-blue)' }}>EVIDENCE&nbsp;&nbsp;</span>
+                          {CLAIM_CER[c.id].evidence}
+                        </div>
+                        {(ok ? CLAIM_CER[c.id].supported : CLAIM_CER[c.id].notSupported) && (
+                          <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--text)' }}>
+                            <span style={{ fontFamily: mono, fontSize: 9.5, letterSpacing: '.1em', color: ok ? 'var(--c-green)' : 'var(--c-pink)' }}>{ok ? 'WHY IT IS SUPPORTED' : 'WHY IT IS NOT SUPPORTED'}&nbsp;&nbsp;</span>
+                            {ok ? CLAIM_CER[c.id].supported : CLAIM_CER[c.id].notSupported}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </button>

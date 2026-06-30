@@ -30,9 +30,9 @@ function runToIterate(act: ActId): LoopState {
     { type: 'NEXT' },
     { type: 'TOGGLE_RUNG', id: free.id },
     { type: 'NEXT' },
-    { type: 'TOGGLE_CONTROL' },
-    { type: 'SET_REP', value: 3 },
   )
+  s = act === 'develop' ? loopReducer(s, { type: 'TOGGLE_CONTROL_CHOICE', id: 'neg' }) : loopReducer(s, { type: 'TOGGLE_CONTROL' })
+  s = loopReducer(s, { type: 'SET_REP', value: 3 })
   s = act === 'develop' ? loopReducer(s, { type: 'SET_DIST', dist: '2d' }) : loopReducer(s, { type: 'TOGGLE_MODEL_LABEL' })
   s = loopReducer(s, { type: 'NEXT' })
   if (act === 'differentiate') {
@@ -105,7 +105,7 @@ test('buildReport surfaces a blocked over-claim honestly (not supported)', () =>
   const r = buildReport(blocked, {}, [], buildExperiment(blocked.replicates))
   assert.equal(blocked.claimResult, 'blocked')
   assert.equal(r.cer.supported, false)
-  assert.match(r.cer.reasoning, /not supported/)
+  assert.match(r.cer.reasoning, /force claim needs a force measurement/, 'the deep CER reasoning explains why the over-claim is not supported')
 })
 
 test('reportToHtml builds a self-contained document and escapes the student name', () => {
@@ -140,6 +140,25 @@ test('Act III report labels the disordered (ctrl) group as the invasive margin',
   const keys = r.measurements.map((m) => m.k).join(' | ')
   assert.match(keys, /Matched normal tissue/)
   assert.match(keys, /Invasive margin/)
+})
+
+test('control gate: only the negative control satisfies it, distractors do not', () => {
+  let s = freshAct('develop', 'darkfield', true)
+  s = loopReducer(s, { type: 'TOGGLE_CONTROL_CHOICE', id: 'same' }) // a distractor
+  assert.equal(s.control, false, 'a distractor does not satisfy the control gate')
+  s = loopReducer(s, { type: 'TOGGLE_CONTROL_CHOICE', id: 'neg' }) // the real negative control
+  assert.equal(s.control, true, 'the negative control satisfies the gate')
+})
+
+test('Act I report carries the control discussion and the deep CER reasoning', () => {
+  let s = runToIterate('develop') // already chose the negative control
+  s = loopReducer(s, { type: 'TOGGLE_CONTROL_CHOICE', id: 'pos' }) // add the positive control
+  const r = buildReport(s, {}, [], buildExperiment(s.replicates))
+  const controlRow = r.design.find((d) => d.k === 'Control')?.v ?? ''
+  assert.match(controlRow, /negative control/)
+  assert.match(controlRow, /positive control/)
+  assert.match(r.cer.evidence, /Control:/)
+  assert.match(r.cer.reasoning, /isolates the FN1 road/, 'the deep CER reasoning ties the control to the claim')
 })
 
 test('buildReport captures the 6 Rs revisions a student wrote', () => {

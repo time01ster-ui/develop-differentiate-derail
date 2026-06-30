@@ -29,7 +29,8 @@ export interface LoopState {
   hypChoice: HypChoice | null
   rungs: string[] // selected rung ids; ceiling = max level among them
   hired: Hired // team you've paid for (operator / interpreter)
-  control: boolean // must be true to pass Design
+  control: boolean // must be true to pass Design (derived: the right negative control is chosen)
+  controlChoices: string[] // Act I: which candidate control(s) the student selected (teaches what a control is)
   replicates: number // 1..6; must be >=3 to pass Design (embryos, or model runs in Act II)
   distance: Distance | null // Act I honesty label (2D vs 3D)
   modelLabeled: boolean // Act II honesty label: "this is a model, not Mateo's tissue"
@@ -59,6 +60,7 @@ export const initialState: LoopState = {
   rungs: [],
   hired: NO_HIRES,
   control: false,
+  controlChoices: [],
   replicates: 2,
   distance: null,
   modelLabeled: false,
@@ -97,6 +99,7 @@ export type Action =
   | { type: 'TOGGLE_RUNG'; id: string }
   | { type: 'HIRE'; role: keyof Hired }
   | { type: 'TOGGLE_CONTROL' }
+  | { type: 'TOGGLE_CONTROL_CHOICE'; id: string } // Act I: pick/unpick a candidate control
   | { type: 'SET_REP'; value: number }
   | { type: 'SET_DIST'; dist: Distance }
   | { type: 'TOGGLE_MODEL_LABEL' }
@@ -208,6 +211,13 @@ export function loopReducer(s: LoopState, a: Action): LoopState {
     }
     case 'TOGGLE_CONTROL':
       return { ...s, control: !s.control }
+    case 'TOGGLE_CONTROL_CHOICE': {
+      // Act I teaches what a control IS by making the student pick it. The gate
+      // (s.control) passes only when the right negative control ('neg') is chosen;
+      // distractors and the positive control alone do not satisfy it.
+      const next = s.controlChoices.includes(a.id) ? s.controlChoices.filter((x) => x !== a.id) : s.controlChoices.concat(a.id)
+      return { ...s, controlChoices: next, control: next.includes('neg') }
+    }
     case 'SET_REP':
       // Changing replicate count invalidates cached experiment data (handled by
       // the consumer keying its memo on `replicates`). Keep the viewed index in

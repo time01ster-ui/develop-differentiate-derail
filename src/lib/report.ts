@@ -9,7 +9,7 @@
 // exportable CER + Limitation artifact the student can actually hand in.
 
 import { getAct } from '../content/registry'
-import { STAGE_LABELS } from '../content/act1'
+import { CLAIM_CER, CONTROLS, STAGE_LABELS } from '../content/act1'
 import { spent } from '../content/resources'
 import { bench, benchAgreement } from './bench'
 import { buildExperiment, embryoMeans, fmtP, mean, perEmbryoWelch, pooledCellCount, type ExperimentData } from './measure'
@@ -143,8 +143,20 @@ export function buildReport(state: LoopState, reflections: Reflections, badgeIds
   if (state.hired.interpreter) hires.push('data interpreter')
 
   const repWord = state.act === 'differentiate' ? 'model runs' : state.act === 'derail' ? 'sample regions' : 'embryos'
+
+  // Act I: the control is chosen from candidates, so report which control(s) and
+  // their role (the discussion becomes part of the scientific argument).
+  const chosenGoodControls = state.act === 'develop' ? CONTROLS.filter((c) => c.good && state.controlChoices.includes(c.id)) : []
+  const controlSummary =
+    state.act === 'develop'
+      ? chosenGoodControls.length
+        ? chosenGoodControls.map((c) => (c.kind === 'negative' ? 'FN1-blocked tissue (negative control)' : 'a known-ordered sample (positive control)')).join(' + ')
+        : 'none chosen'
+      : state.control
+        ? 'on'
+        : 'off'
   const design: ReportRow[] = [
-    { k: 'Control group', v: state.control ? 'on' : 'off' },
+    { k: 'Control', v: controlSummary },
     { k: 'Replicates', v: `${state.replicates} ${repWord}` },
     { k: 'Honesty label', v: honestyLabel(state) },
   ]
@@ -157,13 +169,19 @@ export function buildReport(state: LoopState, reflections: Reflections, badgeIds
   // transient claimResult, so an exported report stays correct even if the page
   // was reloaded on the Iterate stage (claimResult is not carried in the URL).
   const supported = !!claim && claim.req <= ceil
+  // Fold the control into the evidence (the control is part of the argument), and
+  // prefer the deeper per-claim reasoning (why it is or is not supported) for Act I.
+  const cerEvidence = state.act === 'develop' && chosenGoodControls.length ? `${evidence} Control: ${controlSummary}.` : evidence
+  const deepReason = state.act === 'develop' && claim && CLAIM_CER[claim.id] ? (supported ? CLAIM_CER[claim.id].supported : CLAIM_CER[claim.id].notSupported) : ''
   const cer: ReportCER = {
     claim: claim ? claim.text : 'No claim logged.',
     supported,
-    evidence,
-    reasoning: supported
-      ? `The evidence reaches the ${ceilingName} rung, and this claim sits at or below that rung. A stronger claim would need a tool this lab does not have, so the run stops here.`
-      : `This claim sits above the ${ceilingName} rung the evidence reached, so it is not supported. The honest move is to claim only what the evidence backs, or to go back and run a more direct tool.`,
+    evidence: cerEvidence,
+    reasoning:
+      deepReason ||
+      (supported
+        ? `The evidence reaches the ${ceilingName} rung, and this claim sits at or below that rung. A stronger claim would need a tool this lab does not have, so the run stops here.`
+        : `This claim sits above the ${ceilingName} rung the evidence reached, so it is not supported. The honest move is to claim only what the evidence backs, or to go back and run a more direct tool.`),
     limitation: `${A.pinnedQuote} ${A.ceilingAside}`,
   }
 
@@ -219,7 +237,8 @@ export function buildExampleReport(): LabReport {
     { type: 'NEXT' },
     { type: 'TOGGLE_RUNG', id: free.id },
     { type: 'NEXT' },
-    { type: 'TOGGLE_CONTROL' },
+    { type: 'TOGGLE_CONTROL_CHOICE', id: 'neg' },
+    { type: 'TOGGLE_CONTROL_CHOICE', id: 'pos' },
     { type: 'SET_REP', value: 3 },
     { type: 'SET_DIST', dist: '2d' },
     { type: 'NEXT' },

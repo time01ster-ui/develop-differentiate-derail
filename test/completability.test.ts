@@ -56,8 +56,10 @@ function completeFreeOnly(act: ActId): LoopState {
   assert.equal(remaining(cfg, s.rungs, s.hired), cfg.startingBudget, `[${act}] the free rung must cost nothing`)
   s = advance(s)
 
-  // 3 · Design — control + replicates + honesty label (all free)
-  s = apply(s, { type: 'TOGGLE_CONTROL' }, { type: 'SET_REP', value: 3 })
+  // 3 · Design — control + replicates + honesty label (all free). Act I picks the
+  // right negative control from candidates; Acts II/III still use the toggle.
+  s = act === 'develop' ? loopReducer(s, { type: 'TOGGLE_CONTROL_CHOICE', id: 'neg' }) : loopReducer(s, { type: 'TOGGLE_CONTROL' })
+  s = loopReducer(s, { type: 'SET_REP', value: 3 })
   s = act === 'develop' ? loopReducer(s, { type: 'SET_DIST', dist: '2d' }) : loopReducer(s, { type: 'TOGGLE_MODEL_LABEL' })
   s = advance(s)
 
