@@ -32,13 +32,15 @@ export default function Library({
   onClose,
   onSubmitReading,
   initialChapter,
+  notesSubmittedCount = 0,
 }: {
   chapters: LibraryChapter[]
   mode: 'study' | 'reference'
   onBegin?: () => void
   onClose?: () => void
-  onSubmitReading?: () => void
+  onSubmitReading?: (chapterId: string) => void
   initialChapter?: string
+  notesSubmittedCount?: number // how many chapters' guided notes are already turned in (for the points nudge)
 }) {
   const [panel, setPanel] = useState<null | 'glossary' | 'notes' | 'submit'>(null)
   const startIdx = useMemo(() => {
@@ -112,6 +114,19 @@ export default function Library({
             )}
           </div>
         </div>
+
+        {/* Points nudge (not a lock): guided notes earn research points toward rank. */}
+        {mode === 'study' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '9px 20px', borderBottom: '1px solid color-mix(in srgb, var(--c-green) 35%, var(--line))', background: 'color-mix(in srgb, var(--c-green) 8%, var(--bg2))', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 17, flex: 'none' }} aria-hidden>📓</span>
+            <span style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--text)', flex: 1, minWidth: 220 }}>
+              <b>Guided notes earn research points.</b> Fill a chapter's <b>Guided notes</b> and tap <b>📤 Submit</b> to rank up: <b style={{ color: 'var(--c-green)' }}>+15 RP</b> for the first (Did the Reading badge), <b style={{ color: 'var(--c-green)' }}>+25 RP</b> at three (Scholar badge).
+            </span>
+            <span style={{ flex: 'none', fontFamily: mono, fontSize: 11, padding: '4px 10px', borderRadius: 20, border: `1px solid ${notesSubmittedCount > 0 ? 'var(--c-green)' : 'var(--line)'}`, background: notesSubmittedCount > 0 ? 'color-mix(in srgb, var(--c-green) 12%, transparent)' : 'transparent', color: 'var(--text)' }}>
+              📓 {notesSubmittedCount}/{chapters.length} submitted
+            </span>
+          </div>
+        )}
 
         <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
           {/* TOC */}
@@ -288,7 +303,7 @@ export default function Library({
 
       {panel === 'glossary' && <GlossaryPanel onClose={() => setPanel(null)} />}
       {panel === 'notes' && <GuidedNotes ch={ch} onClose={() => setPanel(null)} />}
-      {panel === 'submit' && <Submission ch={ch} onSubmitReading={() => onSubmitReading?.()} onClose={() => setPanel(null)} onOpenNotes={() => setPanel('notes')} />}
+      {panel === 'submit' && <Submission ch={ch} onSubmitReading={() => onSubmitReading?.(ch.id)} onClose={() => setPanel(null)} onOpenNotes={() => setPanel('notes')} />}
     </div>
   )
 }

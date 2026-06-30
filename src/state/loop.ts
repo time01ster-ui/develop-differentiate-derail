@@ -22,7 +22,7 @@ export interface LoopState {
   act: ActId // which act is loaded (develop / differentiate / derail)
   started: boolean // has the student passed the onboarding card?
   libraryDone: boolean // has the student been through the Library study module?
-  readingSubmitted: boolean // has the student submitted completed guided notes (earns the reading points)?
+  notesSubmitted: string[] // chapter ids whose guided notes were submitted; each earns reading points
   step: number // 0..7
   theme: Theme
   qChoice: QChoice | null
@@ -52,7 +52,7 @@ export const initialState: LoopState = {
   act: 'develop',
   started: false,
   libraryDone: false,
-  readingSubmitted: false,
+  notesSubmitted: [],
   step: 0,
   theme: 'darkfield',
   qChoice: null,
@@ -88,7 +88,7 @@ export type Action =
   | { type: 'HYDRATE'; payload: Partial<LoopState> }
   | { type: 'START' }
   | { type: 'FINISH_LIBRARY' }
-  | { type: 'SUBMIT_READING' }
+  | { type: 'SUBMIT_READING'; chapter: string }
   | { type: 'START_ACT'; act: ActId } // jump to a new act (resets the loop)
   | { type: 'JUMP'; step: number }
   | { type: 'NEXT' }
@@ -167,7 +167,7 @@ export function loopReducer(s: LoopState, a: Action): LoopState {
     case 'FINISH_LIBRARY':
       return { ...s, libraryDone: true }
     case 'SUBMIT_READING':
-      return { ...s, readingSubmitted: true }
+      return s.notesSubmitted.includes(a.chapter) ? s : { ...s, notesSubmitted: [...s.notesSubmitted, a.chapter] }
     case 'START_ACT':
       return freshAct(a.act, s.theme, false)
     case 'JUMP':

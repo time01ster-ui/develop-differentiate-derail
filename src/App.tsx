@@ -206,7 +206,8 @@ export default function App() {
     if (state.claimResult === 'valid') should.push('honest_ceiling')
     // Self-correction (the 6 Rs REVISE step): earned once any reflection is revised.
     if (Object.values(reflections).some((r) => r.revised)) should.push('self_corrector')
-    if (state.readingSubmitted) should.push('studied_library')
+    if (state.notesSubmitted.length > 0) should.push('studied_library')
+    if (state.notesSubmitted.length >= 3) should.push('scholar')
     if (state.step >= 7) should.push('loop_closed')
     const have = new Set(game.badges)
     const fresh = should.filter((id) => !have.has(id))
@@ -217,7 +218,7 @@ export default function App() {
       .sort((a, b) => b.points - a.points)[0]
     setGame((g) => ({ badges: Array.from(new Set([...g.badges, ...fresh])) }))
     if (top) setToast(top)
-  }, [state.act, state.qChoice, state.hypChoice, state.rungs.length, state.control, state.replicates, state.distance, state.modelLabeled, state.everMeasured, state.benchSampled, sawHonestN, state.claimResult, state.readingSubmitted, state.step, reflections, game.badges])
+  }, [state.act, state.qChoice, state.hypChoice, state.rungs.length, state.control, state.replicates, state.distance, state.modelLabeled, state.everMeasured, state.benchSampled, sawHonestN, state.claimResult, state.notesSubmitted.length, state.step, reflections, game.badges])
 
   useEffect(() => {
     if (!toast) return
@@ -345,7 +346,7 @@ export default function App() {
       {!state.started ? (
         <Onboarding onStart={() => dispatch({ type: 'START' })} />
       ) : !state.libraryDone ? (
-        <Library mode="study" chapters={A.chapters} onBegin={() => dispatch({ type: 'FINISH_LIBRARY' })} onSubmitReading={() => dispatch({ type: 'SUBMIT_READING' })} />
+        <Library mode="study" chapters={A.chapters} notesSubmittedCount={state.notesSubmitted.length} onBegin={() => dispatch({ type: 'FINISH_LIBRARY' })} onSubmitReading={(chId) => dispatch({ type: 'SUBMIT_READING', chapter: chId })} />
       ) : (
         <>
           <Stepper step={state.step} onJump={(i) => dispatch({ type: 'JUMP', step: i })} />
@@ -449,7 +450,7 @@ export default function App() {
       {glossaryOpen && <GlossaryPanel onClose={() => setGlossaryOpen(false)} />}
       <XpToast badge={toast} />
       {libraryOpen && (
-        <Library mode="reference" chapters={A.chapters} initialChapter={libraryChapter} onClose={() => setLibraryOpen(false)} onSubmitReading={() => dispatch({ type: 'SUBMIT_READING' })} />
+        <Library mode="reference" chapters={A.chapters} initialChapter={libraryChapter} onClose={() => setLibraryOpen(false)} onSubmitReading={(chId) => dispatch({ type: 'SUBMIT_READING', chapter: chId })} />
       )}
     </div>
   )

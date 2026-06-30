@@ -24,7 +24,8 @@ export const BADGES: Badge[] = [
   { id: 'pseudoreplication_spotter', label: 'Pseudoreplication Spotter', hint: 'See why pooling cells fakes a big sample size.', points: 20 },
   { id: 'honest_ceiling', label: 'Honest Ceiling', hint: 'Match your claim to your evidence, with no over-claim.', points: 25 },
   { id: 'self_corrector', label: 'Self-Corrector', hint: 'Revise a wrong first answer into a right one (the 6 Rs REVISE step).', points: 20 },
-  { id: 'studied_library', label: 'Did the Reading', hint: 'Work through the Library study module.', points: 15 },
+  { id: 'studied_library', label: 'Did the Reading', hint: 'Submit your Cornell guided notes for a chapter.', points: 15 },
+  { id: 'scholar', label: 'Scholar', hint: 'Submit guided notes for 3 or more chapters.', points: 25 },
   { id: 'loop_closed', label: 'Closed the Loop', hint: 'Reach the end of the discovery loop.', points: 20 },
 ]
 

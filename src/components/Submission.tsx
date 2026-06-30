@@ -99,8 +99,9 @@ export default function Submission({ ch, onSubmitReading, onClose, onOpenNotes }
 
         {status === 'done' ? (
           <div style={{ marginTop: 14, border: '1px solid var(--c-green)', borderRadius: 12, background: 'color-mix(in srgb, var(--c-green) 8%, var(--panel))', padding: '16px 18px' }}>
-            <div style={{ fontFamily: head, fontWeight: 700, fontSize: 16, color: 'var(--c-green)', marginBottom: 6 }}>✓ Submitted</div>
-            <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--text)', marginBottom: 10 }}>Your reading points are awarded, and a copy of your guided notes just downloaded as a hand-in.</p>
+            <div style={{ fontFamily: head, fontWeight: 700, fontSize: 16, color: 'var(--c-green)', marginBottom: 6 }}>✓ Submitted · +15 RP</div>
+            <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--text)', marginBottom: 8 }}>Your reading points are awarded, and a copy of your guided notes just downloaded as a hand-in.</p>
+            <p style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--muted)', marginBottom: 10 }}>📓 Submit notes for more chapters to rank up faster, the <b style={{ color: 'var(--c-green)' }}>Scholar</b> badge unlocks at 3.</p>
             <ol style={{ margin: '0 0 4px', paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
               <li style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--text)' }}>Your hand-in file downloaded (check your Downloads).</li>
               <li style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--text)' }}>{DROP_FOLDER_URL ? 'Upload that file to the class drop folder below.' : 'Turn it in the way your teacher asks.'}</li>
