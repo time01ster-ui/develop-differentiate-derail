@@ -92,6 +92,23 @@ export default function Onboarding({ onStart }: { onStart: () => void }) {
               ))}
             </div>
 
+            {/* Career connection: a real scientist whose Nobel work IS the force-sensing
+                biology of this lab (mechanotransduction), and whose path models a research career. */}
+            <a
+              href="https://www.sciencefriday.com/segments/ardem-patapoutian-biology-nobel/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'block', textDecoration: 'none', border: '1px solid color-mix(in srgb, var(--c-amber) 45%, var(--line))', borderRadius: 12, background: 'color-mix(in srgb, var(--c-amber) 8%, var(--panel2))', padding: '12px 14px', marginBottom: 18 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 5 }}>
+                <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.12em', color: 'var(--c-amber)' }}>🎧 CAREER CONNECTION</div>
+                <div style={{ fontFamily: mono, fontSize: 10.5, color: 'var(--c-amber)' }}>Listen on Science Friday →</div>
+              </div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--text)' }}>
+                Nobel laureate Ardem Patapoutian discovered how cells turn physical force into electrical signals, the same force-sensing biology behind this lab, and on Science Friday he shares the research and the winding path that led him into a science career.
+              </div>
+            </a>
+
             <p style={{ fontFamily: mono, fontSize: 12, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 20 }}>{ONBOARDING.loop}</p>
 
             {/* The finish line: the student must review the example lab report before begin unlocks. */}
