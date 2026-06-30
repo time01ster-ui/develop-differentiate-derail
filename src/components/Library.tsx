@@ -32,6 +32,7 @@ export default function Library({
   onClose,
   onSubmitReading,
   initialChapter,
+  canBegin = false,
 }: {
   chapters: LibraryChapter[]
   mode: 'study' | 'reference'
@@ -39,6 +40,7 @@ export default function Library({
   onClose?: () => void
   onSubmitReading?: () => void
   initialChapter?: string
+  canBegin?: boolean // study mode: the investigation unlocks only after guided notes are submitted (reading points earned)
 }) {
   const [panel, setPanel] = useState<null | 'glossary' | 'notes' | 'submit'>(null)
   const startIdx = useMemo(() => {
@@ -246,6 +248,15 @@ export default function Library({
           </div>
         </div>
 
+        {/* Reading-points gate: in study mode the investigation stays locked until the
+            student turns in their guided notes (which is how the teacher tracks them). */}
+        {mode === 'study' && !canBegin && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 20px', borderTop: '1px solid color-mix(in srgb, var(--c-amber) 45%, var(--line))', background: 'color-mix(in srgb, var(--c-amber) 9%, var(--bg2))' }}>
+            <span style={{ fontSize: 18, flex: 'none' }} aria-hidden>🔒</span>
+            <span style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--text)' }}>To unlock the investigation, open a chapter, fill in the <b>Guided notes</b>, and tap <b>📤 Submit</b> to turn them in. That earns your reading points.</span>
+          </div>
+        )}
+
         {/* footer nav */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '12px 20px', borderTop: '1px solid var(--line)', background: 'var(--bg2)' }}>
           <button onClick={() => (ext ? setExt(false) : go(idx - 1))} disabled={!ext && idx === 0} style={{ minHeight: 40, padding: '9px 16px', borderRadius: 9, border: '1px solid var(--line)', background: 'transparent', color: !ext && idx === 0 ? 'var(--muted)' : 'var(--text)', cursor: !ext && idx === 0 ? 'default' : 'pointer', fontSize: 13 }}>{ext ? '← Back to the chapters' : '← Previous'}</button>
@@ -253,14 +264,21 @@ export default function Library({
           {!ext && idx < chapters.length - 1 ? (
             <button onClick={() => go(idx + 1)} style={{ minHeight: 40, padding: '9px 16px', borderRadius: 9, border: '1px solid var(--accent)', background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--text)', cursor: 'pointer', fontSize: 13 }}>Next →</button>
           ) : mode === 'study' ? (
-            <button onClick={onBegin} style={{ minHeight: 44, padding: '11px 22px', borderRadius: 10, border: 'none', background: 'var(--accent)', color: '#04060c', cursor: 'pointer', fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 14, boxShadow: '0 0 20px color-mix(in srgb, var(--accent) 45%, transparent)' }}>Begin the investigation →</button>
+            <button
+              onClick={canBegin ? onBegin : undefined}
+              disabled={!canBegin}
+              title={canBegin ? 'Start the investigation' : 'Turn in your guided notes first to earn your reading points'}
+              style={{ minHeight: 44, padding: '11px 22px', borderRadius: 10, border: 'none', background: canBegin ? 'var(--accent)' : 'var(--panel)', color: canBegin ? '#04060c' : 'var(--muted)', cursor: canBegin ? 'pointer' : 'not-allowed', fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 14, boxShadow: canBegin ? '0 0 20px color-mix(in srgb, var(--accent) 45%, transparent)' : 'none', opacity: canBegin ? 1 : 0.75 }}
+            >
+              {canBegin ? 'Begin the investigation →' : '🔒 Turn in your guided notes to begin'}
+            </button>
           ) : (
             <button onClick={onClose} style={{ minHeight: 40, padding: '9px 16px', borderRadius: 9, border: '1px solid var(--line)', background: 'transparent', color: 'var(--text)', cursor: 'pointer', fontSize: 13 }}>Close</button>
           )}
         </div>
 
-        {/* in study mode, also let them begin from the top once they've seen a few */}
-        {mode === 'study' && idx < chapters.length - 1 && (
+        {/* Once notes are submitted, allow jumping to the investigation from the top. */}
+        {mode === 'study' && idx < chapters.length - 1 && canBegin && (
           <button onClick={onBegin} style={{ position: 'absolute', top: 14, right: 20, minHeight: 32, padding: '6px 12px', borderRadius: 8, border: '1px solid var(--accent)', background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--text)', cursor: 'pointer', fontFamily: mono, fontSize: 11 }}>Skip to the investigation →</button>
         )}
       </div>

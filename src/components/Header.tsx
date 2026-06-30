@@ -219,16 +219,18 @@ export default function Header({ theme, onTheme, onOpenCredits, onOpenIntro, onS
             onClick={onStartOver}
             title="Start the whole simulation over from the beginning (keeps your badges)"
             style={{
-              minHeight: 30,
-              padding: '5px 11px',
-              borderRadius: 7,
-              border: '1px solid var(--line)',
-              background: 'transparent',
-              color: 'var(--muted)',
+              minHeight: 32,
+              padding: '6px 15px',
+              borderRadius: 8,
+              border: 'none',
+              background: 'var(--c-amber)',
+              color: '#1a1205',
               cursor: 'pointer',
               fontFamily: mono,
-              fontSize: 10,
-              letterSpacing: '.06em',
+              fontWeight: 700,
+              fontSize: 11.5,
+              letterSpacing: '.08em',
+              boxShadow: '0 0 14px color-mix(in srgb, var(--c-amber) 55%, transparent)',
             }}
           >
             ↺ START OVER
