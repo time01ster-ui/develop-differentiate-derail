@@ -8,6 +8,7 @@ import Define from '../Define'
 import { PiBrief, NotebookNote } from '../StageChrome'
 import { ACT1_RUN_NOTE } from '../../content/story'
 import { useTier } from '../TierContext'
+import MeasureStop from '../MeasureStop'
 import { Kicker } from './ui'
 
 const mono = "'IBM Plex Mono'"
@@ -64,6 +65,7 @@ export default function RunStage({
       </Kicker>
       <PiBrief step={4} />
       <NotebookNote {...ACT1_RUN_NOTE} />
+      <MeasureStop />
       <div style={{ fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.5, marginBottom: 14 }}>
         <b style={{ color: 'var(--c-green)' }}>Step 1</b> (<Define t="segment">Segment</Define>) finds each
         cell and marks its center. <b style={{ color: 'var(--c-blue)' }}>Step 2</b> draws each cell's{' '}

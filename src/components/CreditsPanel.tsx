@@ -20,6 +20,18 @@ const SOURCES: Source[] = [
   { name: 'Type: Space Grotesk · IBM Plex Sans · IBM Plex Mono', detail: 'Self-hosted via @fontsource.', license: 'OFL 1.1' },
 ]
 
+interface Reference {
+  cite: string
+  doi: string
+}
+
+const REFERENCES: Reference[] = [
+  {
+    cite: 'Saraswathibhatla A, Indana D, Chaudhuri O. Cell-extracellular matrix mechanotransduction in 3D. Nat Rev Mol Cell Biol. 2023;24(7):495-516.',
+    doi: '10.1038/s41580-023-00583-1',
+  },
+]
+
 export default function CreditsPanel({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -100,6 +112,16 @@ export default function CreditsPanel({ onClose }: { onClose: () => void }) {
               <span style={{ fontFamily: mono, fontSize: 10.5, color: 'var(--muted)', whiteSpace: 'nowrap' }}>{s.license}</span>
             </div>
             <div style={{ fontSize: 12.5, color: 'var(--muted)', lineHeight: 1.5, marginTop: 4 }}>{s.detail}</div>
+          </div>
+        ))}
+
+        <div style={{ fontFamily: mono, fontSize: 10.5, letterSpacing: '.12em', color: 'var(--accent)', margin: '20px 0 8px' }}>WORKS CITED</div>
+        {REFERENCES.map((r) => (
+          <div key={r.doi} style={{ padding: '4px 0 10px' }}>
+            <p style={{ fontSize: 12.5, lineHeight: 1.55, color: 'var(--text)' }}>{r.cite}</p>
+            <a href={`https://doi.org/${r.doi}`} target="_blank" rel="noopener noreferrer" style={{ fontFamily: mono, fontSize: 11, color: 'var(--accent)' }}>
+              doi.org/{r.doi}
+            </a>
           </div>
         ))}
 

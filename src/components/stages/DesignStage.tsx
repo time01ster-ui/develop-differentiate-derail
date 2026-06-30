@@ -141,8 +141,10 @@ export default function DesignStage({ state, dispatch }: { state: LoopState; dis
         <div style={{ border: `1.5px solid ${state.distance ? 'var(--c-green)' : 'var(--line)'}`, borderRadius: 13, background: 'var(--panel)', padding: '18px 20px' }}>
           <div style={{ fontFamily: "'Space Grotesk'", fontWeight: 600, fontSize: 16, marginBottom: 3 }}>Label the distance you’ll measure</div>
           <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5, marginBottom: 14 }}>
-            You measure spacing on a flat photo. Be honest about what that number really is. Careful:{' '}
-            <b>"True 3D" sounds more correct, but it's the trap</b> here.
+            You measure spacing on a flat photo. In a real embryo the cells sit in <b>3D</b> tissue, but your photo is a
+            flat <b>2D shadow</b> of it, so a flat image can only give a 2D-projected distance. Be honest about what that
+            number really is. Careful: <b>"True 3D" sounds more correct, but it's the trap</b> here. (You will see exactly
+            why at the Run step.)
           </div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <div

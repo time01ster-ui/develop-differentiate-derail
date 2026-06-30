@@ -64,11 +64,11 @@ export const STAGE_GOAL: Record<number, string> = {
 /** The actual lab pipeline behind the Run/Measure step, shown so a student knows
  *  WHAT is being measured and HOW, instead of trusting a black box. */
 export const PROCESS_STEPS: { label: string; text: string }[] = [
-  { label: 'Slice and stain', text: 'A mouse embryo at the frontal-bone stage is thinly sliced, and the cell nuclei are stained so they glow.' },
-  { label: 'Image', text: 'Each slice is photographed under a microscope, giving a flat picture full of bright nuclei.' },
-  { label: 'Segment with Cellpose', text: 'Cellpose, a trained model, draws an outline around every nucleus and records its position.' },
-  { label: 'Map the spacing', text: 'From those positions the computer measures how far each cell sits from its neighbors.' },
-  { label: 'Voronoi spacing', text: 'A Voronoi diagram turns the positions into spacing numbers, so "how evenly are they spaced" becomes something you can compare.' },
+  { label: 'Slice and stain', text: 'A mouse embryo at the frontal-bone stage is thinly sliced. A DNA-binding stain is added that sticks only to the DNA packed inside each nucleus, so the center of every cell glows. The reason: cell outlines are messy and octopus-like, but the nucleus is a clean, trustworthy dot that marks where each cell sits. (A second stain, an antibody tagged to glow, can mark the FN1 road to show the path the cells follow.)' },
+  { label: 'Image', text: 'Each slice is photographed under a microscope, giving a flat picture full of bright nuclei. This picture is 2D, a flat shadow of the real 3D tissue, so every distance you read off it is a 2D-projected distance, not the true 3D spacing.' },
+  { label: 'Segment with Cellpose', text: 'Cellpose, a trained model, outlines every nucleus and records its center point (its centroid). The messy photo becomes a clean field of points you can do geometry on.' },
+  { label: 'Map the spacing', text: 'From those center points the computer measures how far each cell sits from its nearest neighbor, in microns (millionths of a meter).' },
+  { label: 'Voronoi spacing', text: 'A Voronoi diagram gives each cell the territory closest to it; the nearest-neighbor distances become one spacing number, so "how evenly are they spaced" becomes something you can compare between the FN1-rich tissue and the blocked control.' },
 ]
 
 /** Friendly, PI-voiced footer messages when a stage's gate passes. */
