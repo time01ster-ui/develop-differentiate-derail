@@ -345,7 +345,7 @@ export default function App() {
       {!state.started ? (
         <Onboarding onStart={() => dispatch({ type: 'START' })} />
       ) : !state.libraryDone ? (
-        <Library mode="study" chapters={A.chapters} canBegin={state.readingSubmitted} onBegin={() => dispatch({ type: 'FINISH_LIBRARY' })} onSubmitReading={() => dispatch({ type: 'SUBMIT_READING' })} />
+        <Library mode="study" chapters={A.chapters} onBegin={() => dispatch({ type: 'FINISH_LIBRARY' })} onSubmitReading={() => dispatch({ type: 'SUBMIT_READING' })} />
       ) : (
         <>
           <Stepper step={state.step} onJump={(i) => dispatch({ type: 'JUMP', step: i })} />
