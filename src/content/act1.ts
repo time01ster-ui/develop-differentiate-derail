@@ -21,7 +21,7 @@ export const STAGE_LABELS = [
   'Run / Measure',
   'Analyze',
   'Conclude',
-  'Iterate',
+  'Trial (Iterate)',
 ] as const
 
 export const RUNGS: Rung[] = [

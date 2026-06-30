@@ -179,6 +179,55 @@ export function PiBrief({ step, act = 'develop' }: { step: number; act?: ActId }
   )
 }
 
+/** Why repeatability matters on the Trial (Iterate) stage: not only a statistics
+ *  step (more trials tighten your real n) but a BIAS CHECK. One trial can be right
+ *  by luck or wrong by a hidden tilt; repeating it, blind and in other hands,
+ *  separates a real effect from an artifact of how you did it once. */
+export function RepeatabilityNote() {
+  const [open, setOpen] = useState(true)
+  return (
+    <div style={{ border: '1px solid color-mix(in srgb, var(--c-amber) 45%, var(--line))', borderRadius: 14, background: 'color-mix(in srgb, var(--c-amber) 7%, var(--panel))', padding: '16px 20px', marginBottom: 18 }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        style={{ width: '100%', display: 'flex', alignItems: 'flex-start', gap: 11, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text)', padding: 0, textAlign: 'left' }}
+      >
+        <span style={{ fontFamily: mono, fontSize: 12, color: 'var(--c-amber)', marginTop: 3 }}>{open ? '▾' : '▸'}</span>
+        <span style={{ minWidth: 0, flex: 1 }}>
+          <span style={{ display: 'block', fontFamily: mono, fontSize: 10, letterSpacing: '.14em', color: 'var(--c-amber)' }}>WHY RUN IT AGAIN · REPEATABILITY IS A BIAS CHECK</span>
+          <span style={{ display: 'block', fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 19, lineHeight: 1.2, marginTop: 3 }}>A trial you can repeat is a trial you can trust.</span>
+        </span>
+        <span style={{ fontFamily: mono, fontSize: 10.5, color: 'var(--muted)', flex: 'none', marginTop: 3 }}>{open ? 'hide' : 'read'}</span>
+      </button>
+      {open && (
+        <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <p style={{ fontSize: 14.5, lineHeight: 1.6, color: 'var(--text)' }}>
+            Running it again is usually taught as a statistics step: more trials give you a truer <Define t="sample size">sample size</Define> and a tighter estimate. That is real, but it is the smaller reason. The bigger reason is that a single <Define t="trial">trial</Define> can be right by luck or wrong by a hidden tilt, and repeating it is how you tell the difference.
+          </p>
+          <div style={{ border: '1px solid color-mix(in srgb, var(--c-amber) 30%, var(--line))', borderRadius: 10, background: 'color-mix(in srgb, var(--c-amber) 4%, transparent)', padding: '12px 14px' }}>
+            <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.14em', color: 'var(--c-amber)', marginBottom: 9 }}>WHAT ONE RUN CAN HIDE</div>
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {([
+                ['A fluke', 'random noise happened to line up into a pattern this one time.'],
+                ['A bad sample', 'one contaminated slide, a microscope that drifted out of focus, a mislabeled tube.'],
+                ['Your own eye', 'when you already expect a result, it is easy to draw the boundary, or pick the field of view, in the way that fits, without meaning to. That is bias, not cheating, and every scientist has it.'],
+              ] as const).map(([k, v]) => (
+                <li key={k} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 13, lineHeight: 1.5, color: 'var(--text)' }}>
+                  <span style={{ flex: 'none', color: 'var(--c-amber)', fontFamily: mono, fontSize: 12, marginTop: 1 }}>›</span>
+                  <span><b>{k}:</b> {v}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p style={{ fontSize: 14.5, lineHeight: 1.6, color: 'var(--text)' }}>
+            Repeating the trial, ideally on a different day, with a different sample, and with the call made before you look at the answer (<Define t="blind">blind</Define>), separates a real effect from an artifact of how you did it once. If the result only shows up when <i>you</i> run it, that points to <Define t="bias">bias</Define>, not biology. A finding that repeats, in other hands, is one the field can build on.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 /** A Baby Mateo callout (pink), so the case stays the spine, not just bookends. */
 export function MateoNote({ children }: { children: ReactNode }) {
   return (

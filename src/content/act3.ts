@@ -593,7 +593,7 @@ export const ACT3: ActContent = {
   hypotheses: HYPOTHESES3,
   claims: CLAIMS3,
   resource: ACT3_RESOURCE,
-  stageLabels: ['Ask', 'Hypothesize', 'Choose tools', 'Design', 'Run / Measure', 'Analyze', 'Conclude', 'Iterate'],
+  stageLabels: ['Ask', 'Hypothesize', 'Choose tools', 'Design', 'Run / Measure', 'Analyze', 'Conclude', 'Trial (Iterate)'],
   stageBrief: STAGE_BRIEF3,
   stageGoal: STAGE_GOAL3,
   processSteps: PROCESS_STEPS3,

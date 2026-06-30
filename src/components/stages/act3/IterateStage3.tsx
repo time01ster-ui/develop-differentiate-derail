@@ -2,7 +2,7 @@ import type { Dispatch } from 'react'
 import { CLAIMS3, MATEO3, RUNG_NAMES3 } from '../../../content/act3'
 import { fmtP, perEmbryoWelch, type ExperimentData } from '../../../lib/measure'
 import { ceiling, type Action, type LoopState } from '../../../state/loop'
-import { MateoNote, PiBrief } from '../../StageChrome'
+import { MateoNote, PiBrief, RepeatabilityNote } from '../../StageChrome'
 import StatsHelpButton from '../../StatsExplainer'
 
 const mono = "'IBM Plex Mono'"
@@ -27,7 +27,7 @@ export default function IterateStage3({ state, dispatch, data }: { state: LoopSt
 
   return (
     <div className="stage-enter" style={{ maxWidth: 960 }}>
-      <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: '.18em', color: 'var(--accent)', marginBottom: 14 }}>08 · ITERATE, the trilogy closes</div>
+      <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: '.18em', color: 'var(--accent)', marginBottom: 14 }}>08 · TRIAL (ITERATE), the trilogy closes</div>
       <PiBrief step={7} act="derail" />
       <h1 style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 30, lineHeight: 1.13, marginBottom: 18 }}>{iterTitle}</h1>
       <div className="col-2" style={{ marginBottom: 24 }}>
@@ -42,6 +42,7 @@ export default function IterateStage3({ state, dispatch, data }: { state: LoopSt
         </div>
         <MateoNote>{MATEO3.payoff}</MateoNote>
       </div>
+      <RepeatabilityNote />
       <div style={{ border: '1px solid color-mix(in srgb, var(--accent) 30%, var(--line))', borderRadius: 14, background: 'color-mix(in srgb, var(--accent) 5%, var(--panel))', padding: '16px 18px', marginBottom: 20 }}>
         <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.14em', color: 'var(--accent)', marginBottom: 6 }}>THE THROUGHLINE, WHOLE</div>
         <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--text)' }}>

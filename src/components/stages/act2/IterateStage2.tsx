@@ -3,7 +3,7 @@ import { CLAIMS2, MATEO2, RUNG_NAMES2 } from '../../../content/act2'
 import { ACTS } from '../../../content/registry'
 import { bench } from '../../../lib/bench'
 import { ceiling, type Action, type LoopState } from '../../../state/loop'
-import { MateoNote, PiBrief } from '../../StageChrome'
+import { MateoNote, PiBrief, RepeatabilityNote } from '../../StageChrome'
 import StatsHelpButton from '../../StatsExplainer'
 import { ACT_COURSE_SEAL, Seal } from '../../Seal'
 
@@ -30,7 +30,7 @@ export default function IterateStage2({ state, dispatch }: { state: LoopState; d
 
   return (
     <div className="stage-enter" style={{ maxWidth: 960 }}>
-      <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: '.18em', color: 'var(--accent)', marginBottom: 14 }}>08 · ITERATE, the loop closes</div>
+      <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: '.18em', color: 'var(--accent)', marginBottom: 14 }}>08 · TRIAL (ITERATE), the loop closes</div>
       <PiBrief step={7} act="differentiate" />
       <h1 style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: 30, lineHeight: 1.13, marginBottom: 18 }}>{iterTitle}</h1>
       <div className="col-2" style={{ marginBottom: 24 }}>
@@ -45,6 +45,7 @@ export default function IterateStage2({ state, dispatch }: { state: LoopState; d
         </div>
         <MateoNote>{MATEO2.payoff}</MateoNote>
       </div>
+      <RepeatabilityNote />
       <div style={{ marginBottom: 20 }}>
         <StatsHelpButton context="bench" />
       </div>

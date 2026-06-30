@@ -3,7 +3,7 @@ import { CLAIMS, RUNG_NAMES } from '../../content/act1'
 import { MATEO_PAYOFF, ACT1_ITERATE_NOTE } from '../../content/story'
 import { fmtP, perEmbryoWelch, type ExperimentData } from '../../lib/measure'
 import { ceiling, type Action, type LoopState } from '../../state/loop'
-import { MateoNote, PiBrief, NotebookNote } from '../StageChrome'
+import { MateoNote, PiBrief, NotebookNote, RepeatabilityNote } from '../StageChrome'
 import StatsHelpButton from '../StatsExplainer'
 import { ACT_COURSE_SEAL, Seal } from '../Seal'
 
@@ -38,7 +38,7 @@ export default function IterateStage({
   return (
     <div className="stage-enter" style={{ maxWidth: 960 }}>
       <div style={{ fontFamily: mono, fontSize: 11, letterSpacing: '.18em', color: 'var(--accent)', marginBottom: 14 }}>
-        08 · ITERATE, the loop closes
+        08 · TRIAL (ITERATE), the loop closes
       </div>
       <PiBrief step={7} />
       <NotebookNote {...ACT1_ITERATE_NOTE} />
@@ -55,6 +55,7 @@ export default function IterateStage({
         </div>
         <MateoNote>{MATEO_PAYOFF}</MateoNote>
       </div>
+      <RepeatabilityNote />
       <div style={{ marginBottom: 20 }}>
         <StatsHelpButton context="spacing" />
       </div>

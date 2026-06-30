@@ -615,7 +615,7 @@ export const ACT2: ActContent = {
   hypotheses: HYPOTHESES2,
   claims: CLAIMS2,
   resource: ACT2_RESOURCE,
-  stageLabels: ['Ask', 'Hypothesize', 'Choose tools', 'Design', 'Run / Measure', 'Analyze', 'Conclude', 'Iterate'],
+  stageLabels: ['Ask', 'Hypothesize', 'Choose tools', 'Design', 'Run / Measure', 'Analyze', 'Conclude', 'Trial (Iterate)'],
   stageBrief: STAGE_BRIEF2,
   stageGoal: STAGE_GOAL2,
   processSteps: PROCESS_STEPS2,

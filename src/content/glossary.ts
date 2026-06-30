@@ -119,7 +119,15 @@ export const GLOSSARY: Record<string, GlossEntry> = {
   },
   trial: {
     term: 'trial',
-    def: 'One independent repeat of a test, like a single coin flip. In this lab, one replicate is one trial.',
+    def: 'One independent repeat of a test, like a single coin flip. In this lab, one replicate is one trial. Repeating the trial is both a statistics step (it grows your real n) and a bias check (it shows whether a result was real or just how you did it once).',
+  },
+  bias: {
+    term: 'bias',
+    def: 'A hidden tilt that pushes a result one way without you meaning it to: expecting an answer and unconsciously drawing a boundary, or picking a field of view, in the way that fits. It is not cheating, and every scientist has it. Repeating a trial blind, and in other hands, is how you catch it.',
+  },
+  blind: {
+    term: 'blind',
+    def: 'Making the call before you can see the answer, so your expectations cannot steer it. For example, drawing the cell boundaries without knowing which group a sample is in. Blinding is a guard against bias.',
   },
   'sample size': {
     term: 'sample size (n)',

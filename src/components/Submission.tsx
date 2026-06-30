@@ -3,15 +3,21 @@ import { createPortal } from 'react-dom'
 import type { LibraryChapter } from '../content/library'
 import { loadNotes, notesComplete } from './GuidedNotes'
 
-// Submission page for a chapter's completed guided notes. Collects student ID,
-// period, and name, awards the reading points on submit, downloads a hand-in
-// copy, and best-effort POSTs to the teacher-gated backend (a portal API route
-// that writes to a private Notion store; never a public sheet). If the backend
-// is unreachable (e.g. run standalone), the local download is the fallback so
-// the teacher still receives the work.
+// Submission page for a chapter's completed guided notes. Collects student name,
+// ID, and period, awards the reading points on submit, and downloads a named
+// hand-in copy. There is NO network call: identifiable student work never touches
+// a public endpoint. The student then uploads the hand-in to the district class
+// drop folder (CMSD OneDrive), so the work stays inside district storage and the
+// teacher pulls it from there for grading.
 
 const mono = "'IBM Plex Mono'"
 const head = "'Space Grotesk'"
+
+// The class drop folder the student uploads their hand-in to. Paste the share
+// link to the CMSD OneDrive "drop / file request" folder here once it is created
+// (district account, "people in CMSD with the link can upload"). Left blank, the
+// page simply tells students to turn it in the way the teacher asks.
+const DROP_FOLDER_URL = ''
 
 const field: React.CSSProperties = {
   background: 'var(--panel)',
@@ -66,20 +72,10 @@ export default function Submission({ ch, onSubmitReading, onClose }: { ch: Libra
   const complete = notesComplete(ch)
   const ready = complete && id.trim() && period.trim() && name.trim()
 
-  const submit = async () => {
+  const submit = () => {
     if (!ready) return
-    setStatus('sending')
-    const n = loadNotes(ch)
-    // Best-effort send to the teacher-gated backend; local download is the fallback.
-    try {
-      await fetch('/api/biomed-submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'guided-notes', chapterId: ch.id, chapterTitle: ch.title, studentId: id.trim(), period: period.trim(), name: name.trim(), notes: n }),
-      })
-    } catch {
-      /* backend not reachable yet; the download below is the hand-in */
-    }
+    // No network call: the hand-in downloads locally, then the student uploads it
+    // to the district class drop folder. Identifiable work stays inside CMSD storage.
     downloadHandIn(ch, id.trim(), period.trim(), name.trim())
     onSubmitReading()
     setStatus('done')
@@ -97,8 +93,15 @@ export default function Submission({ ch, onSubmitReading, onClose }: { ch: Libra
         {status === 'done' ? (
           <div style={{ marginTop: 14, border: '1px solid var(--c-green)', borderRadius: 12, background: 'color-mix(in srgb, var(--c-green) 8%, var(--panel))', padding: '16px 18px' }}>
             <div style={{ fontFamily: head, fontWeight: 700, fontSize: 16, color: 'var(--c-green)', marginBottom: 6 }}>✓ Submitted</div>
-            <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--text)' }}>Your reading points are awarded. A copy of your guided notes downloaded as a hand-in. Turn it in the way your teacher asks.</p>
-            <button onClick={onClose} style={{ marginTop: 12, minHeight: 40, padding: '9px 16px', borderRadius: 9, border: '1px solid var(--line)', background: 'transparent', color: 'var(--text)', cursor: 'pointer', fontSize: 13 }}>Done</button>
+            <p style={{ fontSize: 13.5, lineHeight: 1.55, color: 'var(--text)', marginBottom: 10 }}>Your reading points are awarded, and a copy of your guided notes just downloaded as a hand-in.</p>
+            <ol style={{ margin: '0 0 4px', paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <li style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--text)' }}>Your hand-in file downloaded (check your Downloads).</li>
+              <li style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--text)' }}>{DROP_FOLDER_URL ? 'Upload that file to the class drop folder below.' : 'Turn it in the way your teacher asks.'}</li>
+            </ol>
+            {DROP_FOLDER_URL && (
+              <a href={DROP_FOLDER_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 10, minHeight: 42, padding: '10px 16px', borderRadius: 10, border: '1px solid var(--c-green)', background: 'color-mix(in srgb, var(--c-green) 12%, transparent)', color: 'var(--text)', textDecoration: 'none', fontFamily: head, fontWeight: 700, fontSize: 14 }}>📤 Open the class drop folder →</a>
+            )}
+            <div><button onClick={onClose} style={{ marginTop: 12, minHeight: 40, padding: '9px 16px', borderRadius: 9, border: '1px solid var(--line)', background: 'transparent', color: 'var(--text)', cursor: 'pointer', fontSize: 13 }}>Done</button></div>
           </div>
         ) : (
           <>
@@ -131,7 +134,7 @@ export default function Submission({ ch, onSubmitReading, onClose }: { ch: Libra
               {status === 'sending' ? 'Submitting...' : ready ? 'Submit and earn reading points →' : complete ? 'Enter your name, ID, and period' : 'Finish your guided notes first'}
             </button>
             <p style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.5, marginTop: 10 }}>
-              Your name and ID go to your teacher with your notes and stay private to the class record.
+              Nothing is sent over the internet. Your hand-in downloads to your device, and you upload it to the district class folder, where it stays private to your class.
             </p>
           </>
         )}
