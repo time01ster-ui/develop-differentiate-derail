@@ -71,7 +71,13 @@ export default function Submission({ ch, onSubmitReading, onClose }: { ch: Libra
   const [name, setName] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'done'>('idle')
   const complete = notesComplete(ch)
-  const ready = complete && id.trim() && period.trim() && name.trim()
+  // Live breakdown so a blocked student sees exactly what is still missing.
+  const nd = loadNotes(ch)
+  const needSections = Math.min(2, ch.sections.length)
+  const filledSections = Math.min(nd.sections.filter((s) => s.trim().length >= 15).length, needSections)
+  const hasSummary = nd.summary.trim().length >= 15
+  const hasFields = !!(name.trim() && id.trim() && period.trim())
+  const ready = complete && hasFields
 
   const submit = () => {
     if (!ready) return
@@ -109,9 +115,22 @@ export default function Submission({ ch, onSubmitReading, onClose }: { ch: Libra
             <p style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.55, margin: '4px 0 14px' }}>
               Submit your completed Cornell guided notes for this chapter to earn the reading points.
             </p>
-            {!complete && (
-              <div style={{ border: '1px solid color-mix(in srgb, var(--c-amber) 50%, var(--line))', borderRadius: 10, background: 'color-mix(in srgb, var(--c-amber) 9%, var(--panel))', padding: '10px 12px', fontSize: 13, lineHeight: 1.5, color: 'var(--text)', marginBottom: 14 }}>
-                Finish your guided notes first: fill in notes for at least two parts and write the summary. Open <b>Guided Notes</b> from the menu.
+            {!ready && (
+              <div style={{ border: '1px solid color-mix(in srgb, var(--c-amber) 50%, var(--line))', borderRadius: 10, background: 'color-mix(in srgb, var(--c-amber) 9%, var(--panel))', padding: '11px 13px', marginBottom: 14 }}>
+                <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: '.1em', color: 'var(--c-amber)', marginBottom: 7 }}>TO SUBMIT, FINISH THESE</div>
+                {[
+                  { done: filledSections >= needSections, label: `Notes in at least ${needSections} parts (${filledSections}/${needSections} done)` },
+                  { done: hasSummary, label: 'A summary of the big idea' },
+                  { done: hasFields, label: 'Your name, student ID, and period (below)' },
+                ].map((r) => (
+                  <div key={r.label} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, lineHeight: 1.5, marginBottom: 4 }}>
+                    <span style={{ flex: 'none', color: r.done ? 'var(--c-green)' : 'var(--muted)' }}>{r.done ? '☑' : '☐'}</span>
+                    <span style={{ color: r.done ? 'var(--muted)' : 'var(--text)' }}>{r.label}</span>
+                  </div>
+                ))}
+                {!complete && (
+                  <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 6 }}>Open <b>📝 Guided Notes</b> from the menu to write your notes (your writing saves as you go).</div>
+                )}
               </div>
             )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -132,7 +151,7 @@ export default function Submission({ ch, onSubmitReading, onClose }: { ch: Libra
               disabled={!ready || status === 'sending'}
               style={{ marginTop: 16, width: '100%', minHeight: 46, borderRadius: 11, border: 'none', background: ready ? 'var(--accent)' : 'var(--panel)', color: ready ? '#04060c' : 'var(--muted)', cursor: ready ? 'pointer' : 'not-allowed', fontFamily: head, fontWeight: 700, fontSize: 15 }}
             >
-              {status === 'sending' ? 'Submitting...' : ready ? 'Submit and earn reading points →' : complete ? 'Enter your name, ID, and period' : 'Finish your guided notes first'}
+              {status === 'sending' ? 'Submitting...' : ready ? 'Submit and earn reading points →' : 'Complete the checklist above to submit'}
             </button>
             <p style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.5, marginTop: 10 }}>
               Nothing is sent over the internet. Your hand-in downloads to your device, and you upload it to the district class folder, where it stays private to your class.
