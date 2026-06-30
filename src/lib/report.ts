@@ -12,10 +12,10 @@ import { getAct } from '../content/registry'
 import { CLAIM_CER, CONTROLS, STAGE_LABELS } from '../content/act1'
 import { spent } from '../content/resources'
 import { bench, benchAgreement } from './bench'
-import { buildExperiment, embryoMeans, fmtP, mean, perEmbryoWelch, pooledCellCount, type ExperimentData } from './measure'
+import { embryoMeans, fmtP, mean, perEmbryoWelch, pooledCellCount, type ExperimentData } from './measure'
 import { badgeById, rankOf, xpOf } from './progress'
-import { emptyReflection, type Reflections } from './reflections'
-import { ceiling, freshAct, loopReducer, type Action, type LoopState } from '../state/loop'
+import { type Reflections } from './reflections'
+import { ceiling, type LoopState } from '../state/loop'
 
 export interface ReportRow {
   k: string
@@ -284,37 +284,75 @@ export function buildReport(state: LoopState, reflections: Reflections, badgeIds
 
 /** The student name + date shown on the example (clearly an example, not real). */
 export const EXAMPLE_NAME = 'Jordan Rivera (sample student)'
-export const EXAMPLE_DATE = 'Example run, Act I'
+export const EXAMPLE_DATE = 'Worked example'
 
+// A WORKED EXAMPLE in the same realm as the student's run, but a DIFFERENT study:
+// it asks a FORCE / TENSION question and uses tools NOT in this lab (a FRET molecular
+// tension sensor, laser ablation, AFM). That way it models a complete, honest report,
+// in the same case, without handing students the answer to their own spacing study.
+// (The student's lab tops out at spacing; tension is exactly the rung they cannot
+// reach, which makes this the perfect aspirational model.)
 export function buildExampleReport(): LabReport {
-  const A = getAct('develop')
-  const free = A.rungs.find((r) => r.lvl === 1)!
-  const acts: Action[] = [
-    { type: 'PICK_Q', id: 'testable' },
-    { type: 'NEXT' },
-    { type: 'PICK_HYP', id: A.hypotheses[0].id },
-    { type: 'NEXT' },
-    { type: 'TOGGLE_RUNG', id: free.id },
-    { type: 'NEXT' },
-    { type: 'TOGGLE_CONTROL_CHOICE', id: 'neg' },
-    { type: 'TOGGLE_CONTROL_CHOICE', id: 'pos' },
-    { type: 'SET_REP', value: 3 },
-    { type: 'SET_DIST', dist: '2d' },
-    { type: 'NEXT' },
-    { type: 'SEGMENT_DONE' },
-    { type: 'MEASURE' },
-    { type: 'NEXT' }, // Analyze
-    { type: 'NEXT' }, // Conclude
-    { type: 'PICK_CLAIM', id: A.claims[0].id },
-    { type: 'NEXT' }, // Iterate
-  ]
-  const s = acts.reduce(loopReducer, freshAct('develop', 'darkfield', true))
-  const reflections: Reflections = {
-    0: { ...emptyReflection(), submitted: true, revised: true, revision: 'I started with "why do babies get clefts," but that is a why I cannot measure. I changed it to whether the crest cells space themselves non-randomly, which I can actually count.', todos: 'Write the testable version of my question first, before I get attached to the big one.' },
-    6: { ...emptyReflection(), submitted: true, revised: true, revision: 'My first instinct was to say FN1 pulls the cells into place. I changed it to "the cells are non-randomly spaced," because I measured spacing, not force.', todos: 'Match the claim to the tool I actually used, and name out loud the thing I did not measure.' },
+  return {
+    actLabel: 'Worked Example · Force in the frontal bone',
+    caseLine: 'Example report · neural-crest tension in the developing frontal bone (a study that uses tools beyond this lab)',
+    abstract:
+      'Neural crest cells migrate to build the frontal bone, and whether they actively pull on one another as they organize is a question about force, not just position. We asked whether these cells carry higher mechanical tension at their cell-to-cell junctions in FN1-rich tissue than in FN1-blocked tissue. To test this directly, we read junctional force three independent ways across 5 embryos per group: a FRET molecular tension sensor, the recoil speed of junctions cut by a laser, and tissue stiffness by atomic force microscopy, using FN1-blocked tissue and a load-free sensor as controls. All three readouts agreed: tension index 0.71 versus 0.38, recoil 2.4 versus 0.9 micrometers per second, and stiffness 1.8 versus 0.7 kilopascals, with an honest per-embryo test at p < 0.001. We conclude that neural crest cells in FN1-rich frontal-bone tissue carry higher junctional tension, because force-direct tools, not a spacing proxy, show the difference. One limit: these are snapshots, so they do not show how the tension changes minute to minute, and do not yet prove that FN1 causes it; live imaging over hours and an actomyosin inhibitor would be the next steps.',
+    abstractParts: [
+      { label: 'What you asked', prompt: 'State your question in one sentence.', ingredient: 'Do neural crest cells carry higher junctional tension in FN1-rich than in FN1-blocked frontal-bone tissue?' },
+      { label: 'Why it matters', prompt: 'One sentence: why is this question worth answering?', ingredient: 'Whether the cells actively pull as they build the bone is a force question, central to how the face takes shape.' },
+      { label: 'How you tested it', prompt: 'One sentence: your method and design.', ingredient: 'We read junctional force three ways (FRET sensor, laser-ablation recoil, AFM stiffness) in FN1-rich vs FN1-blocked tissue across 5 embryos.' },
+      { label: 'What you found', prompt: 'One sentence: your result, with the numbers.', ingredient: 'Tension index 0.71 vs 0.38, recoil 2.4 vs 0.9 micrometers per second, stiffness 1.8 vs 0.7 kilopascals; p < 0.001.' },
+      { label: 'What it means', prompt: 'One or two sentences: your conclusion, plus one honest limit.', ingredient: 'FN1-rich cells carry higher junctional tension. Limit: snapshots only, and not yet proof FN1 is the cause.' },
+    ],
+    question: 'Do neural crest cells building the frontal bone carry mechanical tension across their cell-to-cell junctions, and does that tension depend on the FN1-rich matrix?',
+    hypothesis: 'Neural crest cells in FN1-rich tissue generate more junctional tension than cells in FN1-blocked tissue.',
+    prediction: 'If the FN1-rich matrix lets these cells build actomyosin tension, then a tension sensor reads higher force in FN1-rich regions and a junction cut by a laser recoils faster there, because tension is built by the actomyosin cortex pulling on FN1-anchored adhesions.',
+    tools: ['FRET molecular tension sensor (junctional force)', 'Laser ablation (cut a junction, measure recoil)', 'Atomic force microscopy (tissue stiffness)', 'Traction force microscopy (gel-bead displacement)'],
+    ceilingName: 'Direct force (FRET tension + laser-ablation recoil)',
+    budgetSpent: 132000,
+    budgetTotal: 150000,
+    hires: ['Imaging specialist (FRET + laser ablation)', 'Biophysics core (AFM)'],
+    design: [
+      { k: 'Comparison', v: 'FN1-rich tissue vs FN1-blocked (matched control)' },
+      { k: 'Control', v: 'FN1-blocked (negative) + a load-free sensor that cannot bear force (technical control)' },
+      { k: 'Replicates (real n)', v: '5 embryos per group' },
+      { k: 'Blinding', v: 'Junctions chosen and cut blind to group' },
+      { k: 'Dimension', v: '3D confocal stacks; tension read in-plane at each junction' },
+    ],
+    measurements: [
+      { k: 'FN1-rich · junctional tension index (from FRET; higher = more force)', v: '0.71' },
+      { k: 'FN1-blocked · junctional tension index', v: '0.38' },
+      { k: 'Recoil velocity after laser cut', v: 'FN1-rich 2.4 vs FN1-blocked 0.9 micrometers/s' },
+      { k: 'AFM tissue stiffness', v: 'FN1-rich 1.8 vs FN1-blocked 0.7 kPa' },
+      { k: 'Replicates (real n)', v: '5 + 5 embryos' },
+      { k: 'Honest per-embryo test', v: 'p < 0.001 · significant' },
+    ],
+    analyze:
+      'The real sample is the 5 embryos per group, not the dozens of junctions inside them. Averaging one tension reading per embryo and testing across embryos keeps this honest; pooling every junction would be pseudoreplication and would make the result look more certain than it is. All three independent readouts agree: the FRET tension index is higher, the cut junctions recoil faster, and the tissue is stiffer in FN1-rich regions. Because the laser-recoil and FRET readouts measure force directly, this is stronger evidence about tension than a spacing measurement alone could ever be.',
+    cer: {
+      claim: 'Neural crest cells in FN1-rich frontal-bone tissue carry higher mechanical tension at their junctions than cells in FN1-blocked tissue.',
+      supported: true,
+      evidence: 'Three direct force readouts, measured per embryo (n=5 per group): junctional tension index 0.71 vs 0.38 (FRET), laser-ablation recoil 2.4 vs 0.9 micrometers/s, AFM stiffness 1.8 vs 0.7 kPa. Honest per-embryo test p < 0.001. The load-free sensor read no difference, confirming the signal is force, not an artifact.',
+      reasoning: 'Unlike spacing, which is only a proxy for force, the FRET sensor and the recoil-after-cutting measure tension directly, so a difference in them is real evidence about tension. The FN1-blocked control isolates the FN1 dependence, and the load-free sensor control rules out a sensor artifact. The claim stays at tension, exactly what these tools measured, and reaches no further.',
+      limitation: 'These are snapshots. They show that tension is higher in FN1-rich tissue, not how that tension changes minute to minute as the bone forms, and not yet that FN1 CAUSES the tension. Live imaging over hours, plus an actomyosin inhibitor to block force, would be the next tools.',
+    },
+    sixRs: [
+      { stage: 'Ask', revised: 'I started with "does FN1 cause the tension," but causation needs a perturbation I had not run. I changed the question to whether tension is HIGHER in FN1-rich tissue, which my tools can actually answer.', next: 'Add the actomyosin inhibitor next time so I can test cause, not just association.' },
+      { stage: 'Conclude', revised: 'My first claim said FN1 pulls the cells into place. I pulled it back to "cells carry higher junctional tension," because a difference that tracks with FN1 is not proof FN1 is the cause.', next: 'Name out loud what each tool measures, and claim only that.' },
+    ],
+    badges: [
+      { label: 'Sharp Question', points: 10 },
+      { label: 'Prediction Made', points: 10 },
+      { label: 'Tooled Up', points: 10 },
+      { label: 'Fair Design', points: 15 },
+      { label: 'Honest Ceiling', points: 20 },
+      { label: 'Self-corrector', points: 15 },
+      { label: 'Closed the Loop', points: 20 },
+    ],
+    rank: 'Principal Investigator',
+    xp: 100,
   }
-  const badges = ['studied_library', 'testable_question', 'prediction', 'tooled_up', 'fair_design', 'verified_measure', 'honest_ceiling', 'self_corrector', 'loop_closed']
-  return buildReport(s, reflections, badges, buildExperiment(s.replicates))
 }
 
 // --- portable .html export ---------------------------------------------------

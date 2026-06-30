@@ -124,10 +124,15 @@ test('reportToHtml builds a self-contained document and escapes the student name
 
 test('buildExampleReport produces a complete, supported exemplar (the start-of-run + portal example)', () => {
   const r = buildExampleReport()
-  assert.equal(r.actLabel, 'Act I · Develop')
+  assert.match(r.actLabel, /Worked Example/)
+  // the exemplar is a parallel study: it asks a FORCE / TENSION question with tools
+  // not in this lab, so it models a complete report without being the student's answer
+  assert.match(r.cer.claim, /tension/i, 'the exemplar studies force/tension, not spacing')
+  assert.ok(r.tools.some((t) => /FRET|ablation|atomic force|AFM/i.test(t)), 'uses tools beyond this lab')
   assert.equal(r.cer.supported, true)
   assert.ok(!/No claim logged/.test(r.cer.claim))
   assert.ok(r.measurements.length >= 2)
+  assert.ok(r.abstract.length > 200, 'the exemplar shows a complete model abstract')
   assert.ok(r.sixRs.length >= 1, 'the exemplar shows the 6 Rs corrections')
   assert.ok(r.badges.length >= 1 && r.xp > 0)
 })
